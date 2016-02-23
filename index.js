@@ -43,7 +43,7 @@ function newContext() {
     var newObject = copy(object);
     for (var key in spec) {
       if (hasOwnProperty.call(commands, key)) {
-        return commands[key](spec[key], newObject, spec, object);
+        return commands[key](spec[key], newObject, spec);
       }
     }
     for (var key in spec) {
@@ -55,27 +55,27 @@ function newContext() {
 }
 
 var defaultCommands = {
-  $push: function(value, original, spec, object) {
-    invariantPushAndUnshift(object, spec, '$push');
+  $push: function(value, original, spec) {
+    invariantPushAndUnshift(original, spec, '$push');
     return original.concat(value);
   },
-  $unshift: function(value, original, spec, object) {
-    invariantPushAndUnshift(object, spec, '$unshift');
+  $unshift: function(value, original, spec) {
+    invariantPushAndUnshift(original, spec, '$unshift');
     return value.concat(original);
   },
-  $splice: function(value, original, spec, object) {
-    invariantSplices(object, spec);
+  $splice: function(value, original, spec) {
+    invariantSplices(original, spec);
     value.forEach(function(args) {
       invariantSplice(args);
       splice.apply(original, args);
     });
     return original;
   },
-  $set: function(value, original, spec, object) {
+  $set: function(value, original, spec) {
     invariantSet(spec);
     return value
   },
-  $merge: function(value, original, spec, object) {
+  $merge: function(value, original, spec) {
     invariantMerge(original, value);
     Object.keys(value).forEach(function(key) {
       original[key] = value[key];
@@ -146,15 +146,15 @@ function invariantSet(spec) {
   );
 }
 
-function invariantMerge(mergeObj, nextValue) {
+function invariantMerge(target, specValue) {
   invariant(
-    nextValue && typeof nextValue === 'object',
+    specValue && typeof specValue === 'object',
     'update(): $merge expects a spec of type \'object\'; got %s',
-    nextValue
+    specValue
   );
   invariant(
-    mergeObj && typeof mergeObj === 'object',
+    target && typeof target === 'object',
     'update(): $merge expects a target of type \'object\'; got %s',
-    mergeObj
+    target
   );
 }
