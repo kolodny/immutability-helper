@@ -1,0 +1,25 @@
+{
+  "name": "immutability-helper",
+  "version": "1.0.0",
+  "description": "mutate a copy of data without changing the original source",
+  "main": "index.js",
+  "scripts": {
+    "test-cov": "nyc npm test && nyc report --reporter=lcov",
+    "test-travis": "nyc npm test && nyc report --reporter=text-lcov | less",
+    "test": "mocha test.js"
+  },
+  "keywords": [
+    "immutability"
+  ],
+  "author": "Moshe Kolodny",
+  "license": "MIT",
+  "devDependencies": {
+    "coveralls": "^2.11.6",
+    "expect": "^1.14.0",
+    "mocha": "^2.4.5",
+    "nyc": "^5.6.0"
+  },
+  "dependencies": {
+    "invariant": "^2.2.0"
+  }
+}
