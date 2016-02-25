@@ -142,7 +142,7 @@ describe('update', function() {
         g: {$unshift: [6]},
         h: {$splice: [[0, 1, 7]]},
         i: {$merge: {n: 'o'}},
-        l: {$apply: (x) => x * 2},
+        l: {$apply: function(x) { return x * 2 } },
       },
     })).toEqual({
       a: 'b',
