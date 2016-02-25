@@ -43,7 +43,7 @@ myUpdate.extend('$foo', function(value, original) {
 
 ## Why?
 
-Facebook is deprecating [`react-addons-update`](https://github.com/facebook/react/issues/2909) :frowning:
+`react-addons-update` has react as a peer dependency. Also Facebook is deprecating [`react-addons-update`](https://github.com/facebook/react/issues/2909) :frowning:
 
 [npm-image]: https://img.shields.io/npm/v/immutability-helper.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/immutability-helper
