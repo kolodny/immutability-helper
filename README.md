@@ -8,7 +8,7 @@ immutability-helper
 
 Mutate a copy of data without changing the original source
 
-This is a drop in replacement for `react-addons-update`:
+This is a drop in replacement for [`react-addons-update`](https://facebook.github.io/react/docs/update.html):
 
 ```js
 // import update from 'react-addons-update';
@@ -40,6 +40,10 @@ myUpdate.extend('$foo', function(value, original) {
   return 'foo!';
 });
 ```
+
+## Why?
+
+Facebook is deprecating [`react-addons-update`](https://github.com/facebook/react/issues/2909) :frowning:
 
 [npm-image]: https://img.shields.io/npm/v/immutability-helper.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/immutability-helper
