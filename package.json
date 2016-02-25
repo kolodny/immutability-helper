@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test-cov": "nyc npm test && nyc report --reporter=lcov",
-    "test-travis": "nyc npm test && nyc report --reporter=text-lcov",
+    "test-travis": "nyc npm test && nyc report --reporter=lcov",
     "test": "mocha test.js"
   },
   "keywords": [
