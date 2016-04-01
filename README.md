@@ -31,6 +31,11 @@ const withTax = update(state, {
 });
 assert(JSON.stringify(withTax) === JSON.stringify({ price: 221.4 });
 ```
+
+Note that `original` in the function above is the original object, so if you plan making a
+mutation, you must first shallow clone the object. Another option is to
+use `update` to make the change `return update(original, { foo: {$set: 'bar'} })`
+
 If you don't want to mess around with the globally exported `update` function you can make a copy and work with that copy:
 
 ```js

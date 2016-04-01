@@ -40,14 +40,21 @@ function newContext() {
       '$set'
     );
 
-    var newObject = copy(object);
+    var newObject = object;
     for (var key in spec) {
       if (hasOwnProperty.call(commands, key)) {
-        return commands[key](spec[key], newObject, spec);
+        return commands[key](spec[key], newObject, spec, object);
       }
     }
     for (var key in spec) {
-      newObject[key] = update(object[key], spec[key]);
+      var nextValueForKey = update(object[key], spec[key]);
+      if (nextValueForKey === object[key]) {
+        continue;
+      }
+      if (newObject === object) {
+        newObject = copy(object);
+      }
+      newObject[key] = nextValueForKey;
     }
     return newObject;
   }
@@ -63,24 +70,26 @@ var defaultCommands = {
     invariantPushAndUnshift(original, spec, '$unshift');
     return value.concat(original);
   },
-  $splice: function(value, original, spec) {
-    invariantSplices(original, spec);
+  $splice: function(value, newObject, spec, object) {
+    var originalValue = newObject === object ? copy(object) : newObject;
+    invariantSplices(originalValue, spec);
     value.forEach(function(args) {
       invariantSplice(args);
-      splice.apply(original, args);
+      splice.apply(originalValue, args);
     });
-    return original;
+    return originalValue;
   },
   $set: function(value, original, spec) {
     invariantSet(spec);
-    return value
+    return value;
   },
-  $merge: function(value, original, spec) {
-    invariantMerge(original, value);
+  $merge: function(value, newObject, spec, object) {
+    var originalValue = newObject === object ? copy(object) : newObject;
+    invariantMerge(originalValue, value);
     Object.keys(value).forEach(function(key) {
-      original[key] = value[key];
+      originalValue[key] = value[key];
     });
-    return original;
+    return originalValue;
   },
   $apply: function(value, original) {
     invariantApply(value);
