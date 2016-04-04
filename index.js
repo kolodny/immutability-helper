@@ -33,11 +33,18 @@ function newContext() {
 
   function update(object, spec) {
     invariant(
-      typeof spec === 'object',
-      'update(): You provided a key path to update() that did not contain one ' +
-      'of %s. Did you forget to include {%s: ...}?',
-      Object.keys(commands).join(', '),
-      '$set'
+      !Array.isArray(spec),
+      'update(): You provided an invalid spec to update(). The spec may ' +
+      'not contain an array except as the value of $set, $push, $unshift, ' +
+      '$splice or any custom command allowing an array value.'
+    );
+
+    invariant(
+      typeof spec === 'object' && spec !== null,
+      'update(): You provided an invalid spec to update(). The spec and ' +
+      'every included key path must be plain objects containing one of the ' +
+      'following commands: %s.',
+      Object.keys(commands).join(', ')
     );
 
     var newObject = object;
