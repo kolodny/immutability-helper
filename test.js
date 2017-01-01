@@ -284,20 +284,24 @@ describe('update', function() {
   if (typeof Symbol === 'function' && Symbol('TEST').toString() === 'Symbol(TEST)') {
     describe('works with symbols', function() {
       it('in the source object', function() {
-        var obj = {a: 1, [Symbol.for('b')]: 2}
+        var obj = {a: 1};
+        obj[Symbol.for('b')] = 2;
         expect(update(obj, {c: {$set: 3}})[Symbol.for('b')]).toEqual(2)
       });
       it('in the spec object', function() {
-        var obj = {a: 1, [Symbol.for('b')]: 2}
-        expect(update(obj, {[Symbol.for('b')]: {$set: 2}})[Symbol.for('b')]).toEqual(2)
+        var obj = {a: 1};
+        obj[Symbol.for('b')] = 2;
+        var spec = {}
+        spec[Symbol.for('b')] = {$set: 2};
+        expect(update(obj, spec)[Symbol.for('b')]).toEqual(2)
       });
       it('in the $merge command', function() {
-        var obj = {a: 1, [Symbol.for('b')]: {c: 3}, [Symbol.for('d')]: 4}
-        var spec = {[Symbol.for('b')]: {
-          $merge: {
-            [Symbol.for('e')]: 5
-          }
-        }};
+        var obj = {a: 1};
+        obj[Symbol.for('b')] = {c: 3};
+        obj[Symbol.for('d')] = 4;
+        var spec = {}
+        spec[Symbol.for('b')] = { $merge: {} };
+        spec[Symbol.for('b')].$merge[Symbol.for('e')] = 5
         var updated = update(obj, spec);
         expect(updated[Symbol.for('b')][Symbol.for('e')]).toEqual(5);
         expect(updated[Symbol.for('d')]).toEqual(4);
