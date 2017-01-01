@@ -3,7 +3,7 @@ var invariant = require('invariant');
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 var splice = Array.prototype.splice;
 
-function assign(target, source) {
+var assign = Object.assign || function assign(target, source) {
   for (var key in source) {
     if (hasOwnProperty.call(source, key)) {
       target[key] = source[key];
@@ -11,6 +11,11 @@ function assign(target, source) {
   }
   return target;
 }
+
+var getAllKeys = typeof Object.getOwnPropertySymbols === 'function' ?
+  function(obj) { return Object.keys(obj).concat(Object.getOwnPropertySymbols(obj)) } :
+  function(obj) { return Object.keys(obj) }
+;
 
 function copy(object) {
   if (object instanceof Array) {
@@ -48,12 +53,16 @@ function newContext() {
     );
 
     var newObject = object;
-    for (var key in spec) {
+    var specKeys = getAllKeys(spec)
+    var index, key;
+    for (index = 0; index < specKeys.length; index++) {
+      var key = specKeys[index];
       if (hasOwnProperty.call(commands, key)) {
         return commands[key](spec[key], newObject, spec, object);
       }
     }
-    for (var key in spec) {
+    for (index = 0; index < specKeys.length; index++) {
+      var key = specKeys[index];
       var nextValueForKey = update(object[key], spec[key]);
       if (nextValueForKey === object[key]) {
         continue;
@@ -93,7 +102,7 @@ var defaultCommands = {
   $merge: function(value, newObject, spec, object) {
     var originalValue = newObject === object ? copy(object) : newObject;
     invariantMerge(originalValue, value);
-    Object.keys(value).forEach(function(key) {
+    getAllKeys(value).forEach(function(key) {
       originalValue[key] = value[key];
     });
     return originalValue;
