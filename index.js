@@ -4,7 +4,9 @@ var hasOwnProperty = Object.prototype.hasOwnProperty;
 var splice = Array.prototype.splice;
 
 var assign = Object.assign || function assign(target, source) {
-  for (var key in source) {
+  var keys = getAllKeys(source);
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
     if (hasOwnProperty.call(source, key)) {
       target[key] = source[key];
     }
