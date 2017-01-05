@@ -279,6 +279,15 @@ describe('update', function() {
       expect(myUpdate.bind(null, {$addtax: 0.10}, {$addtax: 0.10})).toNotThrow();
     });
 
+    it('can handle nibling directives', function() {
+      var obj = {a: [1, 2, 3], b: "me"};
+      var spec = {
+        a: {$splice: [[0, 2]]},
+        $merge: {b: "you"},
+      };
+      expect(update(obj, spec)).toEqual({"a":[3],"b":"you"})
+    });
+
   });
 
   if (typeof Symbol === 'function' && Symbol('TEST').toString() === 'Symbol(TEST)') {

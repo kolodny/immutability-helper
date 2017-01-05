@@ -54,27 +54,24 @@ function newContext() {
       Object.keys(commands).join(', ')
     );
 
-    var newObject = object;
+    var nextObject = object;
     var specKeys = getAllKeys(spec)
     var index, key;
     for (index = 0; index < specKeys.length; index++) {
       var key = specKeys[index];
       if (hasOwnProperty.call(commands, key)) {
-        return commands[key](spec[key], newObject, spec, object);
+        nextObject = commands[key](spec[key], nextObject, spec, object);
+      } else {
+        var nextValueForKey = update(object[key], spec[key]);
+        if (nextValueForKey !== nextObject[key]) {
+          if (nextObject === object) {
+            nextObject = copy(object);
+          }
+          nextObject[key] = nextValueForKey;
+        }
       }
     }
-    for (index = 0; index < specKeys.length; index++) {
-      var key = specKeys[index];
-      var nextValueForKey = update(object[key], spec[key]);
-      if (nextValueForKey === object[key]) {
-        continue;
-      }
-      if (newObject === object) {
-        newObject = copy(object);
-      }
-      newObject[key] = nextValueForKey;
-    }
-    return newObject;
+    return nextObject;
   }
 
 }
@@ -88,8 +85,8 @@ var defaultCommands = {
     invariantPushAndUnshift(original, spec, '$unshift');
     return value.concat(original);
   },
-  $splice: function(value, newObject, spec, object) {
-    var originalValue = newObject === object ? copy(object) : newObject;
+  $splice: function(value, nextObject, spec, object) {
+    var originalValue = nextObject === object ? copy(object) : nextObject;
     invariantSplices(originalValue, spec);
     value.forEach(function(args) {
       invariantSplice(args);
@@ -101,8 +98,8 @@ var defaultCommands = {
     invariantSet(spec);
     return value;
   },
-  $merge: function(value, newObject, spec, object) {
-    var originalValue = newObject === object ? copy(object) : newObject;
+  $merge: function(value, nextObject, spec, object) {
+    var originalValue = nextObject === object ? copy(object) : nextObject;
     invariantMerge(originalValue, value);
     getAllKeys(value).forEach(function(key) {
       originalValue[key] = value[key];
