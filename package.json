@@ -1,6 +1,6 @@
 {
   "name": "immutability-helper",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "mutate a copy of data without changing the original source",
   "main": "index.js",
   "scripts": {
