@@ -12,12 +12,11 @@ var assign = Object.assign || function assign(target, source) {
     }
   }
   return target;
-}
+};
 
 var getAllKeys = typeof Object.getOwnPropertySymbols === 'function' ?
   function(obj) { return Object.keys(obj).concat(Object.getOwnPropertySymbols(obj)) } :
-  function(obj) { return Object.keys(obj) }
-;
+  function(obj) { return Object.keys(obj) };
 
 function copy(object) {
   if (object instanceof Array) {
@@ -29,12 +28,11 @@ function copy(object) {
   }
 }
 
-
 function newContext() {
   var commands = assign({}, defaultCommands);
   update.extend = function(directive, fn) {
     commands[directive] = fn;
-  }
+  };
 
   return update;
 
@@ -55,10 +53,10 @@ function newContext() {
     );
 
     var nextObject = object;
-    var specKeys = getAllKeys(spec)
+    var specKeys = getAllKeys(spec);
     var index, key;
     for (index = 0; index < specKeys.length; index++) {
-      var key = specKeys[index];
+      key = specKeys[index];
       if (hasOwnProperty.call(commands, key)) {
         nextObject = commands[key](spec[key], nextObject, spec, object);
       } else {
@@ -112,11 +110,8 @@ var defaultCommands = {
   }
 };
 
-
-
 module.exports = newContext();
 module.exports.newContext = newContext;
-
 
 // invariants
 
