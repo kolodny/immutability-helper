@@ -1,5 +1,5 @@
 var update = require('./');
-var expect = require('expect')
+var expect = require('expect');
 
 describe('update', function() {
 
@@ -130,7 +130,7 @@ describe('update', function() {
     it('keeps reference equality when possible', function() {
       var original = {a: {b: {}}};
       function identity(val) {
-       return val;
+        return val;
       }
       expect(update(original, {a: {$apply: identity}})).toBe(original);
       expect(update(original, {a: {$apply: applier}})).toNotBe(original);
@@ -156,7 +156,7 @@ describe('update', function() {
           g: {$unshift: [6]},
           h: {$splice: [[0, 1, 7]]},
           i: {$merge: {n: 'o'}},
-          l: {$apply: function(x) { return x * 2; }},
+          l: {$apply: function(x) { return x * 2 }},
         },
       })).toEqual({
         a: 'b',
@@ -285,7 +285,7 @@ describe('update', function() {
         a: {$splice: [[0, 2]]},
         $merge: {b: "you"},
       };
-      expect(update(obj, spec)).toEqual({"a":[3],"b":"you"})
+      expect(update(obj, spec)).toEqual({"a":[3],"b":"you"});
     });
 
   });
@@ -295,22 +295,22 @@ describe('update', function() {
       it('in the source object', function() {
         var obj = {a: 1};
         obj[Symbol.for('b')] = 2;
-        expect(update(obj, {c: {$set: 3}})[Symbol.for('b')]).toEqual(2)
+        expect(update(obj, {c: {$set: 3}})[Symbol.for('b')]).toEqual(2);
       });
       it('in the spec object', function() {
         var obj = {a: 1};
         obj[Symbol.for('b')] = 2;
-        var spec = {}
+        var spec = {};
         spec[Symbol.for('b')] = {$set: 2};
-        expect(update(obj, spec)[Symbol.for('b')]).toEqual(2)
+        expect(update(obj, spec)[Symbol.for('b')]).toEqual(2);
       });
       it('in the $merge command', function() {
         var obj = {a: 1};
         obj[Symbol.for('b')] = {c: 3};
         obj[Symbol.for('d')] = 4;
-        var spec = {}
+        var spec = {};
         spec[Symbol.for('b')] = { $merge: {} };
-        spec[Symbol.for('b')].$merge[Symbol.for('e')] = 5
+        spec[Symbol.for('b')].$merge[Symbol.for('e')] = 5;
         var updated = update(obj, spec);
         expect(updated[Symbol.for('b')][Symbol.for('e')]).toEqual(5);
         expect(updated[Symbol.for('d')]).toEqual(4);
