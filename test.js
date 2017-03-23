@@ -206,6 +206,18 @@ describe('update', function() {
     });
   });
 
+  it('should accept array spec to modify arrays', function() {
+    var original = {value: [{a: 0}]};
+    var modified = update(original, {value: [{a: {$set: 1}}]});
+    expect(modified).toEqual({value: [{a: 1}]});
+  });
+
+  it('should accept object spec to modify arrays', function() {
+    var original = {value: [{a: 0}]};
+    var modified = update(original, {value: {'0': {a: {$set: 1}}}});
+    expect(modified).toEqual({value: [{a: 1}]});
+  });
+
   it('should reject arrays except as values of specific commands', function() {
     var specs = [
       [],
