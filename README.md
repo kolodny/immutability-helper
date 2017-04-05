@@ -132,7 +132,7 @@ const state = { price: 123 };
 const withTax = update(state, {
   price: {$addtax: 0.8},
 });
-assert(JSON.stringify(withTax) === JSON.stringify({ price: 221.4 });
+assert(JSON.stringify(withTax) === JSON.stringify({ price: 221.4 }));
 ```
 
 Note that `original` in the function above is the original object, so if you plan making a
