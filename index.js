@@ -98,6 +98,23 @@ var defaultCommands = {
     invariantSet(spec);
     return value;
   },
+  $unset: function(value, nextObject, spec, object) {
+    invariant(
+      Array.isArray(value),
+      'update(): expected spec of $unset to be an array; got %s. ' +
+      'Did you forget to wrap the key(s) in an array?',
+      value
+    );
+    var originalValue = nextObject;
+    for (var i = 0; i < value.length; i++) {
+      var key = value[i];
+      if (Object.hasOwnProperty.call(originalValue, key)) {
+        originalValue = nextObject === object ? copy(object) : nextObject;
+        delete originalValue[key];
+      }
+    }
+    return originalValue;
+  },
   $merge: function(value, nextObject, spec, object) {
     var originalValue = nextObject === object ? copy(object) : nextObject;
     invariantMerge(originalValue, value);

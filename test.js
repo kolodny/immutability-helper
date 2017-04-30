@@ -110,6 +110,28 @@ describe('update', function() {
     });
   });
 
+  describe('$unset', function() {
+    it('unsets', function() {
+      expect(update({a: 'b'}, {$unset: ['a']}).a).toBe(undefined);
+    });
+    it('removes the key from the object', function() {
+      var removed = update({a: 'b'}, {$unset: ['a']});
+      expect('a' in removed).toBe(false);
+    });
+    it('does not remove keys from the inherited properties', function() {
+      function Parent() { this.foo = 'Parent'; }
+      function Child() {}
+      Child.prototype = new Parent()
+      var child = new Child();
+      expect(update(child, {$unset: ['foo']}).foo).toEqual('Parent');
+    });
+    it('keeps reference equality when possible', function() {
+      var original = {a: 1};
+      expect(update(original, {$unset: ['b']})).toBe(original);
+      expect(update(original, {$unset: ['a']})).toNotBe(original);
+    });
+  });
+
   describe('$apply', function() {
     var applier = function(node) {
       return {v: node.v * 2};
@@ -233,6 +255,13 @@ describe('update', function() {
     });
   });
 
+  it('should reject non arrays from $unset', function() {
+    expect(update.bind(null, {a: 'b'}, {$unset: 'a'})).toThrow(
+      'update(): expected spec of $unset to be an array; got a. ' +
+      'Did you forget to wrap the key(s) in an array?'
+    );
+  });
+
   it('should require a plain object spec containing command(s)', function() {
     var specs = [
       null,
@@ -244,7 +273,7 @@ describe('update', function() {
       expect(update.bind(null, {a: 'b'}, spec)).toThrow(
         'update(): You provided an invalid spec to update(). The spec ' +
         'and every included key path must be plain objects containing one ' +
-        'of the following commands: $push, $unshift, $splice, $set, ' +
+        'of the following commands: $push, $unshift, $splice, $set, $unset, ' +
         '$merge, $apply.'
       );
     });
