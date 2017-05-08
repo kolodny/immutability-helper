@@ -8,7 +8,7 @@ immutability-helper
 
 Mutate a copy of data without changing the original source
 
-This is a drop in replacement for [`react-addons-update`](https://facebook.github.io/react/docs/update.html):
+This is a drop-in replacement for [`react-addons-update`](https://facebook.github.io/react/docs/update.html):
 
 ```js
 // import update from 'react-addons-update';
@@ -18,13 +18,13 @@ const state1 = ['x'];
 const state2 = update(state1, {$push: ['y']}); // ['x', 'y']
 ```
 
-Note that this module has nothing to do with react, however since this module is most commonly used with react, the docs will focus on how it can be used with react.
+Note that this module has nothing to do with React. However, since this module is most commonly used with React, the docs will focus on how it can be used with React.
 
 ## Overview
 
-React lets you use whatever style of data management you want, including mutation. However, if you can use immutable data in performance-critical parts of your application it's easy to implement a fast [`shouldComponentUpdate()`](/react/docs/react-component.html#shouldcomponentupdate) method to significantly speed up your app.
+React lets you use whatever style of data management you want, including mutation. However, if you can use immutable data in performance-critical parts of your application it's easy to implement a fast [`shouldComponentUpdate()`](https://facebook.github.io/react/docs/react-component.html#shouldcomponentupdate) method to significantly speed up your app.
 
-Dealing with immutable data in JavaScript is more difficult than in languages designed for it, like [Clojure](http://clojure.org/). However, we've provided a simple immutability helper, `update()`, that makes dealing with this type of data much easier, *without* fundamentally changing how your data is represented. You can also take a look at Facebook's [Immutable-js](https://facebook.github.io/immutable-js/docs/) and the [Advanced Performance](/react/docs/advanced-performance.html) section for more detail on Immutable-js.
+Dealing with immutable data in JavaScript is more difficult than in languages designed for it, like [Clojure](http://clojure.org/). However, we've provided a simple immutability helper, `update()`, that makes dealing with this type of data much easier, *without* fundamentally changing how your data is represented. You can also take a look at Facebook's [Immutable.js](https://facebook.github.io/immutable-js/docs/) and React’s [Using Immutable Data Structures](https://facebook.github.io/react/docs/optimizing-performance.html#using-immutable-data-structures) section for more detail on Immutable.js.
 
 ### The Main Idea
 
