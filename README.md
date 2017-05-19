@@ -121,6 +121,8 @@ const newObj = update(obj, {$merge: {b: 6, c: 7}}); // => {a: 5, b: 6, c: 7}
 
 ---
 
+## Adding your own commands
+
 The main difference this module has with `react-addons-update` is that
 you can extend this to give it more functionality:
 
