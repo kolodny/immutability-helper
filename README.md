@@ -78,7 +78,7 @@ The `$`-prefixed keys are called *commands*. The data structure they are "mutati
 
   * `{$push: array}` `push()` all the items in `array` on the target.
   * `{$unshift: array}` `unshift()` all the items in `array` on the target.
-  * `{$splice: array of arrays}` for each item in `arrays` call `splice()` on the target with the parameters provided by the item.
+  * `{$splice: array of arrays}` for each item in `arrays` call `splice()` on the target with the parameters provided by the item. ***Note:** The items in the array are applied sequentially, so the order matters. The indices of the target may change during the operation.*
   * `{$set: any}` replace the target entirely.
   * `{$merge: object}` merge the keys of `object` with the target.
   * `{$apply: function}` passes in the current value to the function and updates it with the new returned value.
