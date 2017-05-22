@@ -92,6 +92,21 @@ describe('update', function() {
         'update(): $merge expects a target of type \'object\'; got 7'
       );
     });
+    it('keeps reference equality when possible', function() {
+      var original = {a: {b: {c: true}}};
+      expect(update(original, {a: {$merge: {}}})).toBe(original);
+      expect(update(original, {a: {$merge: { b: original.a.b }}})).toBe(original);
+
+      // Merging primatives of the same value should return the original.
+      expect(update(original, {a: {b: { $merge: {c: true} }}})).toBe(original);
+
+      // Two objects are different values even though they are deeply equal.
+      expect(update(original, {a: {$merge: { b: {c: true} }}})).toNotBe(original);
+      expect(update(original, {
+        a: {$merge: { b: original.a.b, c: false }}
+      })).toNotBe(original);
+    });
+
   });
 
   describe('$set', function() {

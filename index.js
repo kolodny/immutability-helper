@@ -116,10 +116,18 @@ var defaultCommands = {
     return originalValue;
   },
   $merge: function(value, nextObject, spec, object) {
-    var originalValue = nextObject === object ? copy(object) : nextObject;
+    var originalValue = nextObject;
     invariantMerge(originalValue, value);
+    var allKeys = getAllKeys(value);
+    var wasCloned = false;
     getAllKeys(value).forEach(function(key) {
-      originalValue[key] = value[key];
+      if (value[key] !== originalValue[key]) {
+        if (!wasCloned) {
+          originalValue = nextObject === object ? copy(object) : nextObject;
+          wasCloned = true;
+        }
+        originalValue[key] = value[key];
+      }
     });
     return originalValue;
   },
