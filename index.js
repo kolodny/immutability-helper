@@ -3,20 +3,18 @@ var invariant = require('invariant');
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 var splice = Array.prototype.splice;
 
-var assign = Object.assign || function assign(target, source) {
-  var keys = getAllKeys(source);
-  for (var i = 0; i < keys.length; i++) {
-    var key = keys[i];
+var assign = Object.assign || /* istanbul ignore next */ function assign(target, source) {
+  getAllKeys(source).forEach(function(key) {
     if (hasOwnProperty.call(source, key)) {
       target[key] = source[key];
     }
-  }
+  });
   return target;
 };
 
 var getAllKeys = typeof Object.getOwnPropertySymbols === 'function' ?
   function(obj) { return Object.keys(obj).concat(Object.getOwnPropertySymbols(obj)) } :
-  function(obj) { return Object.keys(obj) };
+  /* istanbul ignore next */ function(obj) { return Object.keys(obj) };
 
 function copy(object) {
   if (object instanceof Array) {
@@ -57,8 +55,7 @@ function newContext() {
     var nextObject = object;
     var specKeys = getAllKeys(spec);
     var index, key;
-    for (index = 0; index < specKeys.length; index++) {
-      key = specKeys[index];
+    getAllKeys(spec).forEach(function(key) {
       if (hasOwnProperty.call(commands, key)) {
         nextObject = commands[key](spec[key], nextObject, spec, object);
       } else {
@@ -70,7 +67,7 @@ function newContext() {
           nextObject[key] = nextValueForKey;
         }
       }
-    }
+    })
     return nextObject;
   }
 
@@ -106,30 +103,24 @@ var defaultCommands = {
       value
     );
     var originalValue = nextObject;
-    for (var i = 0; i < value.length; i++) {
-      var key = value[i];
+    value.forEach(function(key) {
       if (Object.hasOwnProperty.call(originalValue, key)) {
-        originalValue = nextObject === object ? copy(object) : nextObject;
-        delete originalValue[key];
-      }
-    }
-    return originalValue;
-  },
-  $merge: function(value, nextObject, spec, object) {
-    var originalValue = nextObject;
-    invariantMerge(originalValue, value);
-    var allKeys = getAllKeys(value);
-    var wasCloned = false;
-    getAllKeys(value).forEach(function(key) {
-      if (value[key] !== originalValue[key]) {
-        if (!wasCloned) {
-          originalValue = nextObject === object ? copy(object) : nextObject;
-          wasCloned = true;
-        }
-        originalValue[key] = value[key];
+        if (nextObject === object) nextObject = copy(object);
+        delete nextObject[key];
       }
     });
-    return originalValue;
+    return nextObject;
+  },
+  $merge: function(value, nextObject, spec, object) {
+    var nextObject = nextObject;
+    invariantMerge(nextObject, value);
+    getAllKeys(value).forEach(function(key) {
+      if (value[key] !== nextObject[key]) {
+        if (nextObject === object) nextObject = copy(object);
+        nextObject[key] = value[key];
+      }
+    });
+    return nextObject;
   },
   $apply: function(value, original) {
     invariantApply(value);
