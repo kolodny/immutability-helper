@@ -105,12 +105,19 @@ var defaultCommands = {
       'Did you forget to wrap the key(s) in an array?',
       value
     );
+    var deletingKeys = [];
     var originalValue = nextObject;
     for (var i = 0; i < value.length; i++) {
       var key = value[i];
       if (Object.hasOwnProperty.call(originalValue, key)) {
-        originalValue = nextObject === object ? copy(object) : nextObject;
-        delete originalValue[key];
+        deletingKeys.push(key);
+      }
+    }
+    if (deletingKeys.length > 0) {
+      originalValue = copy(object);
+      for (var j = 0; j < deletingKeys.length; j++) {
+        var deletingkey = deletingKeys[j];
+        delete originalValue[deletingkey];
       }
     }
     return originalValue;

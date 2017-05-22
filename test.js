@@ -133,6 +133,14 @@ describe('update', function() {
       var removed = update({a: 'b'}, {$unset: ['a']});
       expect('a' in removed).toBe(false);
     });
+    it('removes multiple keys from the object', function() {
+      var original = {a: 'b', c: 'd', e: 'f'};
+      var removed = update(original, {$unset: ['a', 'e']});
+      expect('a' in removed).toBe(false);
+      expect('a' in original).toBe(true);
+      expect('e' in removed).toBe(false);
+      expect('e' in original).toBe(true);
+    });
     it('does not remove keys from the inherited properties', function() {
       function Parent() { this.foo = 'Parent'; }
       function Child() {}
