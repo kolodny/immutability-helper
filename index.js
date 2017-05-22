@@ -74,49 +74,47 @@ function newContext() {
 }
 
 var defaultCommands = {
-  $push: function(value, original, spec) {
-    invariantPushAndUnshift(original, spec, '$push');
-    return original.concat(value);
+  $push: function(value, nextObject, spec) {
+    invariantPushAndUnshift(nextObject, spec, '$push');
+    return nextObject.concat(value);
   },
-  $unshift: function(value, original, spec) {
-    invariantPushAndUnshift(original, spec, '$unshift');
-    return value.concat(original);
+  $unshift: function(value, nextObject, spec) {
+    invariantPushAndUnshift(nextObject, spec, '$unshift');
+    return value.concat(nextObject);
   },
-  $splice: function(value, nextObject, spec, object) {
-    var originalValue = nextObject === object ? copy(object) : nextObject;
-    invariantSplices(originalValue, spec);
+  $splice: function(value, nextObject, spec, originalObject) {
+    invariantSplices(nextObject, spec);
     value.forEach(function(args) {
       invariantSplice(args);
-      splice.apply(originalValue, args);
+      if (nextObject === originalObject) nextObject = copy(originalObject);
+      splice.apply(nextObject, args);
     });
-    return originalValue;
+    return nextObject;
   },
-  $set: function(value, original, spec) {
+  $set: function(value, nextObject, spec) {
     invariantSet(spec);
     return value;
   },
-  $unset: function(value, nextObject, spec, object) {
+  $unset: function(value, nextObject, spec, originalObject) {
     invariant(
       Array.isArray(value),
       'update(): expected spec of $unset to be an array; got %s. ' +
       'Did you forget to wrap the key(s) in an array?',
       value
     );
-    var originalValue = nextObject;
     value.forEach(function(key) {
-      if (Object.hasOwnProperty.call(originalValue, key)) {
-        if (nextObject === object) nextObject = copy(object);
+      if (Object.hasOwnProperty.call(nextObject, key)) {
+        if (nextObject === originalObject) nextObject = copy(originalObject);
         delete nextObject[key];
       }
     });
     return nextObject;
   },
-  $merge: function(value, nextObject, spec, object) {
-    var nextObject = nextObject;
+  $merge: function(value, nextObject, spec, originalObject) {
     invariantMerge(nextObject, value);
     getAllKeys(value).forEach(function(key) {
       if (value[key] !== nextObject[key]) {
-        if (nextObject === object) nextObject = copy(object);
+        if (nextObject === originalObject) nextObject = copy(originalObject);
         nextObject[key] = value[key];
       }
     });
