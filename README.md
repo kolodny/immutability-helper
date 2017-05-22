@@ -80,6 +80,7 @@ The `$`-prefixed keys are called *commands*. The data structure they are "mutati
   * `{$unshift: array}` `unshift()` all the items in `array` on the target.
   * `{$splice: array of arrays}` for each item in `arrays` call `splice()` on the target with the parameters provided by the item. ***Note:** The items in the array are applied sequentially, so the order matters. The indices of the target may change during the operation.*
   * `{$set: any}` replace the target entirely.
+  * `{$unset: array of strings}` remove the list of keys in `array` from the target object.
   * `{$merge: object}` merge the keys of `object` with the target.
   * `{$apply: function}` passes in the current value to the function and updates it with the new returned value.
 
@@ -117,6 +118,63 @@ const newObj2 = update(obj, {b: {$set: obj.b * 2}});
 ```js
 const obj = {a: 5, b: 3};
 const newObj = update(obj, {$merge: {b: 6, c: 7}}); // => {a: 5, b: 6, c: 7}
+```
+
+### [Autovivification](https://en.wikipedia.org/wiki/Autovivification)
+
+Autovivification is the auto creation of new arrays and objects when needed. In the context
+of javascript that would mean something like this
+
+```js
+const state = {}
+state.a.b.c = 1; // state would equal { a: { b: { c: 1 } } }
+```
+
+Since javascript doesn't have this "feature", the same applies to `immutability-helper`. The reason
+why this is practically impossible in javascript and by extension `immutability-helper` is the following:
+
+```js
+var state = {}
+state.thing[0] = 'foo' // What type should state.thing have? Should it be an object or array?
+state.thing2[1] = 'foo2' // What about thing2? This must be an object!
+state.thing3 = ['thing3'] // This is regular js, this works without autovivification
+state.thing3[1] = 'foo3' // Hmm, notice that state.thing2 is an object, yet this is an array
+state.thing2.slice // should be undefined
+state.thing2.slice // should be a function
+```
+
+If you need to set something deeply nested and don't want to have to set each layer down the line,
+consider using this technique which is shown with a contrived example:
+
+```js
+var state = {}
+var desiredState = {
+  foo: [
+    {
+      bar: ['x', 'y', 'z']
+    },
+  ],
+};
+
+var state2 = update(state, {
+  foo: {$apply: foo =>
+    update(foo || [], {
+      0: {$apply: fooZero =>
+        update(fooZero || {}, {
+          bar: {$apply: bar =>
+            update(bar || [], {$push: ['x', 'y', 'z']})
+          }
+        })
+      }
+    })
+  }
+})
+
+console.log(JSON.stringify(state2) === JSON.stringify(desiredState)) // true
+// note that state could have been declared as any of the following and it would still output true:
+// var state = { foo: [] }
+// var state = { foo: [ {} ] }
+// var state = { foo: [ {bar: []} ] }
 ```
 
 ---
