@@ -16,6 +16,7 @@ var getAllKeys = typeof Object.getOwnPropertySymbols === 'function' ?
   function(obj) { return Object.keys(obj).concat(Object.getOwnPropertySymbols(obj)) } :
   /* istanbul ignore next */ function(obj) { return Object.keys(obj) };
 
+/* istanbul ignore next */
 function copy(object) {
   if (object instanceof Array) {
     return object.slice();
