@@ -76,17 +76,17 @@ function newContext() {
 var defaultCommands = {
   $push: function(value, nextObject, spec) {
     invariantPushAndUnshift(nextObject, spec, '$push');
-    return nextObject.concat(value);
+    return value.length ? nextObject.concat(value) : nextObject;
   },
   $unshift: function(value, nextObject, spec) {
     invariantPushAndUnshift(nextObject, spec, '$unshift');
-    return value.concat(nextObject);
+    return value.length ? value.concat(nextObject) : nextObject;
   },
   $splice: function(value, nextObject, spec, originalObject) {
     invariantSplices(nextObject, spec);
     value.forEach(function(args) {
       invariantSplice(args);
-      if (nextObject === originalObject) nextObject = copy(originalObject);
+      if (nextObject === originalObject && args.length) nextObject = copy(originalObject);
       splice.apply(nextObject, args);
     });
     return nextObject;

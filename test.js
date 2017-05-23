@@ -23,6 +23,10 @@ describe('update', function() {
         'update(): expected target of $push to be an array; got 1.'
       );
     });
+    it('keeps reference equality when possible', function() {
+      var original = ['x'];
+      expect(update(original, {$push: []})).toBe(original)
+    });
   });
 
   describe('$unshift', function() {
@@ -44,6 +48,10 @@ describe('update', function() {
       expect(update.bind(null, 1, {$unshift: 7})).toThrow(
         'update(): expected target of $unshift to be an array; got 1.'
       );
+    });
+    it('keeps reference equality when possible', function() {
+      var original = ['x'];
+      expect(update(original, {$unshift: []})).toBe(original)
     });
   });
 
@@ -70,6 +78,10 @@ describe('update', function() {
       expect(update.bind(null, 1, {$splice: 7})).toThrow(
         'Expected $splice target to be an array; got 1'
       );
+    });
+    it('keeps reference equality when possible', function() {
+      var original = ['x'];
+      expect(update(original, {$splice: [[]]})).toBe(original)
     });
   });
 
