@@ -54,7 +54,6 @@ function newContext() {
     );
 
     var nextObject = object;
-    var specKeys = getAllKeys(spec);
     var index, key;
     getAllKeys(spec).forEach(function(key) {
       if (hasOwnProperty.call(commands, key)) {
