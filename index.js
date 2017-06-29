@@ -21,7 +21,7 @@ function copy(object) {
   if (object instanceof Array) {
     return object.slice();
   } else if (object && typeof object === 'object') {
-    return assign(new object.constructor(), object);
+    return assign(Object.create(object.prototype || null), object)
   } else {
     return object;
   }
