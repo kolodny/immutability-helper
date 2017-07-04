@@ -394,4 +394,9 @@ describe('update', function() {
     });
   }
 
+  it('supports objects without prototypes', function() {
+    var obj = Object.create(null);
+    expect(update.bind(null, obj, {$merge: {a: 'b'}})).toNotThrow()
+  });
+
 });
