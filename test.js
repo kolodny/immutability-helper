@@ -324,11 +324,13 @@ describe('update', function() {
 
 
 describe('update', function() {
+
+  var myUpdate;
+  beforeEach(function() {
+    myUpdate = update.newContext();
+  });
+
   describe('can extend functionality', function() {
-    var myUpdate;
-    beforeEach(function() {
-      myUpdate = update.newContext();
-    });
 
     it('allows adding new directives', function() {
       myUpdate.extend('$addtax', function(tax, original) {
@@ -398,5 +400,18 @@ describe('update', function() {
     var obj = Object.create(null);
     expect(update.bind(null, obj, {$merge: {a: 'b'}})).toNotThrow()
   });
+
+  it('supports an escape hatch for isEquals', function() {
+    myUpdate.isEquals = function(a, b) {
+      return JSON.stringify(a) === JSON.stringify(b);
+    }
+    var a = {b: {c: {d: [4, 5]}}};
+    var b = myUpdate(a, {b: {c: {d: {$set: [4, 5]}}}});
+    var c = myUpdate(a, {b: {$set: {c: {d: [4, 5]}}}});
+    var d = myUpdate(a, {$set: {b: {c: {d: [4, 5]}}}});
+    expect(a).toBe(b)
+    expect(a).toBe(c)
+    expect(a).toBe(d)
+  })
 
 });
