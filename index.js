@@ -19,7 +19,7 @@ var getAllKeys = typeof Object.getOwnPropertySymbols === 'function' ?
 /* istanbul ignore next */
 function copy(object) {
   if (object instanceof Array) {
-    return object.slice();
+    return assign(object.constructor(object.length), object)
   } else if (object && typeof object === 'object') {
     var prototype = object.constructor && object.constructor.prototype
     return assign(Object.create(prototype || null), object);

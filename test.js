@@ -412,6 +412,16 @@ describe('update', function() {
     expect(a).toBe(b)
     expect(a).toBe(c)
     expect(a).toBe(d)
-  })
+  });
+
+  it('does not lose non integer keys of an array', function() {
+    var state = a = { items: [
+      { name: 'Superman', strength: 1000 },
+      { name: 'Jim', strength: 2 },
+    ] };
+    state.items.top = 0
+    var state2 = update(state, { items: { 1: { strength: { $set: 3 } } } });
+    expect(state2.items.top).toBe(0)
+  });
 
 });
