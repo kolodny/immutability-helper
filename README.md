@@ -177,6 +177,38 @@ console.log(JSON.stringify(state2) === JSON.stringify(desiredState)) // true
 // var state = { foo: [ {bar: []} ] }
 ```
 
+You can also choose to use the extend functionality to add an `$auto` and `$autoArray` command:
+
+```js
+update.extend('$auto', function(value, object) {
+  return object ?
+    update(object, value):
+    update({}, value);
+});
+update.extend('$autoArray', function(value, object) {
+  return object ?
+    update(object, value):
+    update([], value);
+});
+
+var state = {}
+var desiredState = {
+  foo: [
+    {
+      bar: ['x', 'y', 'z']
+    },
+  ],
+};
+var state2 = update(state, {
+  foo: {$autoArray: {
+    0: {$auto: {
+      bar: {$autoArray: {$push: ['x', 'y', 'z']}}
+    }}
+  }}
+});
+console.log(JSON.stringify(state2) === JSON.stringify(desiredState)) // true
+```
+
 ---
 
 ## Adding your own commands
