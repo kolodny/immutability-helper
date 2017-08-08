@@ -66,7 +66,7 @@ function newContext() {
         }
       } else {
         var nextValueForKey = update(object[key], spec[key]);
-        if (!update.isEquals(nextValueForKey, nextObject[key])) {
+        if (!update.isEquals(nextValueForKey, nextObject[key]) || typeof nextValueForKey === 'undefined') {
           if (nextObject === object) {
             nextObject = copy(object);
           }
