@@ -135,6 +135,13 @@ describe('update', function() {
       expect(update(original, {a: {$set: 1}})).toBe(original);
       expect(update(original, {a: {$set: 2}})).toNotBe(original);
     });
+    it('setting a property to undefined should add an enumerable key to final object with value undefined', function() {
+      var original = {a: 1};
+      var result = update(original, {b: {$set: undefined}});
+      expect(result).toNotBe(original);
+      expect(result).toEqual({a: 1, b: undefined});
+      expect(Object.keys(result).length).toEqual(2);
+    });
   });
 
   describe('$unset', function() {
