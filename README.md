@@ -120,6 +120,20 @@ const obj = {a: 5, b: 3};
 const newObj = update(obj, {$merge: {b: 6, c: 7}}); // => {a: 5, b: 6, c: 7}
 ```
 
+### Computed Property Names
+
+Arrays can be indexed into with runtime variables via the ES2015
+[Computed Property Names](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#Computed_property_names)
+feature. An object property name expression may be wrapped in brackets [] which will be
+evaluated at runtime to form the final property name.
+
+```js
+const collection = {children: ['zero', 'one', 'two']};
+const index = 1;
+const newCollection = update(collection, {children: {[index]: {$set: 1}}});
+// => {children: ['zero', 1, 'two']}
+```
+
 ### [Autovivification](https://en.wikipedia.org/wiki/Autovivification)
 
 Autovivification is the auto creation of new arrays and objects when needed. In the context
