@@ -103,7 +103,9 @@ var defaultCommands = {
   },
   $toggle: function(target, nextObject, spec) {
     invariantToggle(target, nextObject);
-    return assign({}, nextObject, {[target]: !nextObject[target]});
+    var nextObjectCopy = copy(nextObject);
+    nextObjectCopy[target] = !nextObject[target];
+    return nextObjectCopy;
   },
   $unset: function(value, nextObject, spec, originalObject) {
     invariant(
@@ -159,7 +161,7 @@ function invariantPushAndUnshift(value, spec, command) {
 }
 
 function invariantToggle(target, nextObject) {
-  const type = typeof nextObject[target];
+  var type = typeof nextObject[target];
 
   invariant(
     type === 'boolean',
