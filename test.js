@@ -144,6 +144,20 @@ describe('update', function() {
     });
   });
 
+  describe('$toggle', function() {
+    it('toggles false to true', function() {
+      expect(update({a: false}, {$toggle: 'a'})).toEqual({a: true});
+    });
+    it('toggles true to false', function() {
+      expect(update({a: true}, {$toggle: 'a'})).toEqual({a: false});
+    });
+    it('does not mutate the original object', function() {
+      var obj = {a: false};
+      update(obj, {$toggle: 'a'});
+      expect(obj).toEqual({a: false});
+    });
+  });
+
   describe('$unset', function() {
     it('unsets', function() {
       expect(update({a: 'b'}, {$unset: ['a']}).a).toBe(undefined);
@@ -315,7 +329,7 @@ describe('update', function() {
       expect(update.bind(null, {a: 'b'}, spec)).toThrow(
         'update(): You provided an invalid spec to update(). The spec ' +
         'and every included key path must be plain objects containing one ' +
-        'of the following commands: $push, $unshift, $splice, $set, $unset, ' +
+        'of the following commands: $push, $unshift, $splice, $set, $toggle, $unset, ' +
         '$merge, $apply.'
       );
     });

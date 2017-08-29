@@ -101,6 +101,10 @@ var defaultCommands = {
     invariantSet(spec);
     return value;
   },
+  $toggle: function(target, nextObject, spec) {
+    invariantToggle(target, nextObject);
+    return assign({}, nextObject, {[target]: !nextObject[target]});
+  },
   $unset: function(value, nextObject, spec, originalObject) {
     invariant(
       Array.isArray(value),
@@ -151,6 +155,16 @@ function invariantPushAndUnshift(value, spec, command) {
     'Did you forget to wrap your parameter in an array?',
     command,
     specValue
+  );
+}
+
+function invariantToggle(target, nextObject) {
+  const type = typeof nextObject[target];
+
+  invariant(
+    type === 'boolean',
+    'toggle(): expected target to be a boolean; got %s.',
+    type
   );
 }
 
