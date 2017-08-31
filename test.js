@@ -145,16 +145,18 @@ describe('update', function() {
   });
 
   describe('$toggle', function() {
-    it('toggles false to true', function() {
-      expect(update({a: false}, {$toggle: 'a'})).toEqual({a: true});
-    });
-    it('toggles true to false', function() {
-      expect(update({a: true}, {$toggle: 'a'})).toEqual({a: false});
+    it('toggles false to true and true to false', function() {
+      expect(update({a: false, b: true}, {$toggle: ['a', 'b']})).toEqual({a: true, b: false});
     });
     it('does not mutate the original object', function() {
       var obj = {a: false};
-      update(obj, {$toggle: 'a'});
+      update(obj, {$toggle: ['a']});
       expect(obj).toEqual({a: false});
+    });
+    it('keeps reference equality when possible', function() {
+      var original = {a: false};
+      expect(update(original, {$toggle: []})).toBe(original);
+      expect(update(original, {$toggle: ['a']})).toNotBe(original);
     });
   });
 

@@ -101,10 +101,14 @@ var defaultCommands = {
     invariantSet(spec);
     return value;
   },
-  $toggle: function(target, nextObject, spec) {
-    invariantToggle(target, nextObject);
-    var nextObjectCopy = copy(nextObject);
-    nextObjectCopy[target] = !nextObject[target];
+  $toggle: function(targets, nextObject) {
+    invariantToggle(targets, nextObject);
+    var nextObjectCopy = targets.length ? copy(nextObject) : nextObject;
+
+    targets.forEach(function(target) {
+      nextObjectCopy[target] = !nextObject[target];
+    });
+
     return nextObjectCopy;
   },
   $unset: function(value, nextObject, spec, originalObject) {
@@ -160,13 +164,12 @@ function invariantPushAndUnshift(value, spec, command) {
   );
 }
 
-function invariantToggle(target, nextObject) {
-  var type = typeof nextObject[target];
-
+function invariantToggle(value) {
   invariant(
-    type === 'boolean',
-    'toggle(): expected target to be a boolean; got %s.',
-    type
+    Array.isArray(value),
+    'update(): expected spec of $toggle to be an array; got %s. ' +
+    'Did you forget to wrap the key(s) in an array?',
+    value
   );
 }
 
