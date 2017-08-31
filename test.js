@@ -145,6 +145,12 @@ describe('update', function() {
   });
 
   describe('$toggle', function() {
+    it('only takes an array as spec', function() {
+      expect(update.bind(null, {a: false}, {$toggle: 'a'})).toThrow(
+        'update(): expected spec of $toggle to be an array; got a. Did you ' +
+        'forget to wrap the key(s) in an array?'
+      );
+    });
     it('toggles false to true and true to false', function() {
       expect(update({a: false, b: true}, {$toggle: ['a', 'b']})).toEqual({a: true, b: false});
     });
