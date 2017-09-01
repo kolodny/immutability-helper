@@ -10,6 +10,11 @@ Mutate a copy of data without changing the original source
 
 This is a drop-in replacement for [`react-addons-update`](https://facebook.github.io/react/docs/update.html):
 
+Setup via NPM
+```sh
+npm install immutability-helper --save
+```
+
 ```js
 // import update from 'react-addons-update';
 import update from 'immutability-helper';
