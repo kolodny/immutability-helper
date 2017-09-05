@@ -144,6 +144,28 @@ describe('update', function() {
     });
   });
 
+  describe('$toggle', function() {
+    it('only takes an array as spec', function() {
+      expect(update.bind(null, {a: false}, {$toggle: 'a'})).toThrow(
+        'update(): expected spec of $toggle to be an array; got a. Did you ' +
+        'forget to wrap the key(s) in an array?'
+      );
+    });
+    it('toggles false to true and true to false', function() {
+      expect(update({a: false, b: true}, {$toggle: ['a', 'b']})).toEqual({a: true, b: false});
+    });
+    it('does not mutate the original object', function() {
+      var obj = {a: false};
+      update(obj, {$toggle: ['a']});
+      expect(obj).toEqual({a: false});
+    });
+    it('keeps reference equality when possible', function() {
+      var original = {a: false};
+      expect(update(original, {$toggle: []})).toBe(original);
+      expect(update(original, {$toggle: ['a']})).toNotBe(original);
+    });
+  });
+
   describe('$unset', function() {
     it('unsets', function() {
       expect(update({a: 'b'}, {$unset: ['a']}).a).toBe(undefined);
@@ -315,7 +337,7 @@ describe('update', function() {
       expect(update.bind(null, {a: 'b'}, spec)).toThrow(
         'update(): You provided an invalid spec to update(). The spec ' +
         'and every included key path must be plain objects containing one ' +
-        'of the following commands: $push, $unshift, $splice, $set, $unset, ' +
+        'of the following commands: $push, $unshift, $splice, $set, $toggle, $unset, ' +
         '$merge, $apply.'
       );
     });
