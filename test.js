@@ -148,7 +148,7 @@ describe('update', function() {
     it('only takes an array as spec', function() {
       expect(update.bind(null, {a: false}, {$toggle: 'a'})).toThrow(
         'update(): expected spec of $toggle to be an array; got a. Did you ' +
-        'forget to wrap the key(s) in an array?'
+        'forget to wrap your parameter in an array?'
       );
     });
     it('toggles false to true and true to false', function() {
@@ -194,6 +194,48 @@ describe('update', function() {
       expect(update(original, {$unset: ['b']})).toBe(original);
       expect(update(original, {$unset: ['a']})).toNotBe(original);
     });
+  });
+
+  describe('$add', function() {
+    it('works on Map', function() {
+      var state = new Map([[1, 2], [3, 4]]);
+      var state2 = update(state, {$add: [[5, 6]]});
+      expect(state2.get(1)).toEqual(2);
+      expect(state2.get(5)).toEqual(6);
+    });
+    it('works on Set', function() {
+      var state = new Set([1, 2, 3, 4]);
+      var state2 = update(state, {$add: [5, 6]});
+      expect(state2.has(1)).toBe(true);
+      expect(state2.has(5)).toBe(true);
+    });
+    it('throws on a non Map or Set', function() {
+      expect(update.bind(null, 2, {$add: [1]})).toThrow(
+        'update(): $add expects a target of type Set or Map; got Number'
+      );
+    })
+  });
+
+  describe('$remove', function() {
+    it('works on Map', function() {
+      var state = new Map([[1, 2], [3, 4], [5, 6]]);
+      var state2 = update(state, {$remove: [1, 5]});
+      expect(state2.has(1)).toBe(false);
+      expect(state2.has(3)).toBe(true);
+      expect(state2.get(3)).toBe(4);
+      expect(state2.has(6)).toBe(false);
+    });
+    it('works on Set', function() {
+      var state = new Set([1, 2, 3, 4]);
+      var state2 = update(state, {$remove: [2, 3]});
+      expect(state2.has(1)).toBe(true);
+      expect(state2.has(2)).toBe(false);
+    });
+    it('throws on a non Map or Set', function() {
+      expect(update.bind(null, 2, {$remove: [1]})).toThrow(
+        'update(): $remove expects a target of type Set or Map; got Number'
+      );
+    })
   });
 
   describe('$apply', function() {
@@ -322,7 +364,7 @@ describe('update', function() {
   it('should reject non arrays from $unset', function() {
     expect(update.bind(null, {a: 'b'}, {$unset: 'a'})).toThrow(
       'update(): expected spec of $unset to be an array; got a. ' +
-      'Did you forget to wrap the key(s) in an array?'
+      'Did you forget to wrap your parameter in an array?'
     );
   });
 
@@ -338,7 +380,7 @@ describe('update', function() {
         'update(): You provided an invalid spec to update(). The spec ' +
         'and every included key path must be plain objects containing one ' +
         'of the following commands: $push, $unshift, $splice, $set, $toggle, $unset, ' +
-        '$merge, $apply.'
+        '$add, $remove, $merge, $apply.'
       );
     });
   });

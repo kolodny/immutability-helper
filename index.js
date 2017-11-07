@@ -3,6 +3,11 @@ var invariant = require('invariant');
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 var splice = Array.prototype.splice;
 
+var toString = Object.prototype.toString
+var type = function(obj) {
+  return toString.call(obj).slice(8, -1);
+}
+
 var assign = Object.assign || /* istanbul ignore next */ function assign(target, source) {
   getAllKeys(source).forEach(function(key) {
     if (hasOwnProperty.call(source, key)) {
@@ -20,6 +25,10 @@ var getAllKeys = typeof Object.getOwnPropertySymbols === 'function' ?
 function copy(object) {
   if (Array.isArray(object)) {
     return assign(object.constructor(object.length), object)
+  } else if (type(object) === 'Map') {
+    return new Map(object)
+  } else if (type(object) === 'Set') {
+    return new Set(object)
   } else if (object && typeof object === 'object') {
     var prototype = object.constructor && object.constructor.prototype
     return assign(Object.create(prototype || null), object);
@@ -102,7 +111,7 @@ var defaultCommands = {
     return value;
   },
   $toggle: function(targets, nextObject) {
-    invariantToggle(targets, nextObject);
+    invariantSpecArray(targets, '$toggle');
     var nextObjectCopy = targets.length ? copy(nextObject) : nextObject;
 
     targets.forEach(function(target) {
@@ -112,17 +121,39 @@ var defaultCommands = {
     return nextObjectCopy;
   },
   $unset: function(value, nextObject, spec, originalObject) {
-    invariant(
-      Array.isArray(value),
-      'update(): expected spec of $unset to be an array; got %s. ' +
-      'Did you forget to wrap the key(s) in an array?',
-      value
-    );
+    invariantSpecArray(value, '$unset');
     value.forEach(function(key) {
       if (Object.hasOwnProperty.call(nextObject, key)) {
         if (nextObject === originalObject) nextObject = copy(originalObject);
         delete nextObject[key];
       }
+    });
+    return nextObject;
+  },
+  $add: function(value, nextObject, spec, originalObject) {
+    invariantMapOrSet(nextObject, '$add');
+    invariantSpecArray(value, '$add');
+    if (type(nextObject) === 'Map') {
+      value.forEach(function(pair) {
+        var key = pair[0];
+        var value = pair[1];
+        if (nextObject === originalObject && nextObject.get(key) !== value) nextObject = copy(originalObject);
+        nextObject.set(key, value);
+      });
+    } else {
+      value.forEach(function(value) {
+        if (nextObject === originalObject && !nextObject.has(value)) nextObject = copy(originalObject);
+        nextObject.add(value);
+      });
+    }
+    return nextObject;
+  },
+  $remove: function(value, nextObject, spec, originalObject) {
+    invariantMapOrSet(nextObject, '$remove');
+    invariantSpecArray(value, '$remove');
+    value.forEach(function(key) {
+      if (nextObject === originalObject && nextObject.has(key)) nextObject = copy(originalObject);
+      nextObject.delete(key);
     });
     return nextObject;
   },
@@ -154,22 +185,16 @@ function invariantPushAndUnshift(value, spec, command) {
     command,
     value
   );
-  var specValue = spec[command];
+  invariantSpecArray(spec[command], command)
+}
+
+function invariantSpecArray(spec, command) {
   invariant(
-    Array.isArray(specValue),
+    Array.isArray(spec),
     'update(): expected spec of %s to be an array; got %s. ' +
     'Did you forget to wrap your parameter in an array?',
     command,
-    specValue
-  );
-}
-
-function invariantToggle(value) {
-  invariant(
-    Array.isArray(value),
-    'update(): expected spec of $toggle to be an array; got %s. ' +
-    'Did you forget to wrap the key(s) in an array?',
-    value
+    spec
   );
 }
 
@@ -216,5 +241,15 @@ function invariantMerge(target, specValue) {
     target && typeof target === 'object',
     'update(): $merge expects a target of type \'object\'; got %s',
     target
+  );
+}
+
+function invariantMapOrSet(target, command) {
+  var typeOfTarget = type(target);
+  invariant(
+    typeOfTarget === 'Map' || typeOfTarget === 'Set',
+    'update(): %s expects a target of type Set or Map; got %s',
+    command,
+    typeOfTarget
   );
 }
