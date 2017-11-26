@@ -22,13 +22,25 @@ const state1 = ['x'];
 const state2 = update(state1, {$push: ['y']}); // ['x', 'y']
 ```
 
-Note that this module has nothing to do with React. However, since this module is most commonly used with React, the docs will focus on how it can be used with React.
+Note that this module has nothing to do with React. However, since this module
+is most commonly used with React, the docs will focus on how it can be used with
+React.
 
 ## Overview
 
-React lets you use whatever style of data management you want, including mutation. However, if you can use immutable data in performance-critical parts of your application it's easy to implement a fast [`shouldComponentUpdate()`](https://facebook.github.io/react/docs/react-component.html#shouldcomponentupdate) method to significantly speed up your app.
+React lets you use whatever style of data management you want, including
+mutation. However, if you can use immutable data in performance-critical parts
+of your application it's easy to implement a fast[`shouldComponentUpdate()`](https://facebook.github.io/react/docs/react-component.html#shouldcomponentupdate) method
+to significantly speed up your app.
 
-Dealing with immutable data in JavaScript is more difficult than in languages designed for it, like [Clojure](http://clojure.org/). However, we've provided a simple immutability helper, `update()`, that makes dealing with this type of data much easier, *without* fundamentally changing how your data is represented. You can also take a look at Facebook's [Immutable.js](https://facebook.github.io/immutable-js/docs/) and React’s [Using Immutable Data Structures](https://facebook.github.io/react/docs/optimizing-performance.html#using-immutable-data-structures) section for more detail on Immutable.js.
+Dealing with immutable data in JavaScript is more difficult than in languages
+designed for it, like [Clojure](http://clojure.org/). However, we've provided a
+simple immutability helper, `update()`, that makes dealing with this type of
+data much easier, *without* fundamentally changing how your data is represented.
+You can also take a look at Facebook's
+[Immutable.js](https://facebook.github.io/immutable-js/docs/) and React’s
+[Using Immutable Data Structures](https://facebook.github.io/react/docs/optimizing-performance.html#using-immutable-data-structures) section for more
+detail on Immutable.js.
 
 ### The Main Idea
 
@@ -40,7 +52,11 @@ myData.x.y.z = 7;
 myData.a.b.push(9);
 ```
 
-You have no way of determining which data has changed since the previous copy has been overwritten. Instead, you need to create a new copy of `myData` and change only the parts of it that need to be changed. Then you can compare the old copy of `myData` with the new one in `shouldComponentUpdate()` using triple-equals:
+You have no way of determining which data has changed since the previous copy
+has been overwritten. Instead, you need to create a new copy of `myData` and
+change only the parts of it that need to be changed. Then you can compare the
+old copy of `myData` with the new one in `shouldComponentUpdate()` using
+triple-equals:
 
 ```js
 const newData = deepCopy(myData);
@@ -48,7 +64,10 @@ newData.x.y.z = 7;
 newData.a.b.push(9);
 ```
 
-Unfortunately, deep copies are expensive, and sometimes impossible. You can alleviate this by only copying objects that need to be changed and by reusing the objects that haven't changed. Unfortunately, in today's JavaScript this can be cumbersome:
+Unfortunately, deep copies are expensive, and sometimes impossible. You can
+alleviate this by only copying objects that need to be changed and by reusing
+the objects that haven't changed. Unfortunately, in today's JavaScript this can
+be cumbersome:
 
 ```js
 const newData = extend(myData, {
@@ -59,11 +78,15 @@ const newData = extend(myData, {
 });
 ```
 
-While this is fairly performant (since it only makes a shallow copy of `log n` objects and reuses the rest), it's a big pain to write. Look at all the repetition! This is not only annoying, but also provides a large surface area for bugs.
+While this is fairly performant (since it only makes a shallow copy of `log n`
+objects and reuses the rest), it's a big pain to write. Look at all the
+repetition! This is not only annoying, but also provides a large surface area
+for bugs.
 
 ## `update()`
 
-`update()` provides simple syntactic sugar around this pattern to make writing this code easier. This code becomes:
+`update()` provides simple syntactic sugar around this pattern to make writing
+this code easier. This code becomes:
 
 ```js
 import update from 'immutability-helper';
@@ -74,20 +97,35 @@ const newData = update(myData, {
 });
 ```
 
-While the syntax takes a little getting used to (though it's inspired by [MongoDB's query language](http://docs.mongodb.org/manual/core/crud-introduction/#query)) there's no redundancy, it's statically analyzable and it's not much more typing than the mutative version.
+While the syntax takes a little getting used to (though it's inspired by
+[MongoDB's query language](http://docs.mongodb.org/manual/core/crud-introduction/#query)) there's no redundancy, it's statically analyzable and it's not much more typing
+than the mutative version.
 
-The `$`-prefixed keys are called *commands*. The data structure they are "mutating" is called the *target*.
+The `$`-prefixed keys are called *commands*. The data structure they are
+"mutating" is called the *target*.
 
 ## Available Commands
 
   * `{$push: array}` `push()` all the items in `array` on the target.
   * `{$unshift: array}` `unshift()` all the items in `array` on the target.
-  * `{$splice: array of arrays}` for each item in `arrays` call `splice()` on the target with the parameters provided by the item. ***Note:** The items in the array are applied sequentially, so the order matters. The indices of the target may change during the operation.*
+  * `{$splice: array of arrays}` for each item in `arrays` call `splice()` on
+  the target with the parameters provided by the item. ***Note:** The items in
+  the array are applied sequentially, so the order matters. The indices of the
+  target may change during the operation.*
   * `{$set: any}` replace the target entirely.
-  * `{$toggle: array of strings}` toggles a list of boolean fields from the target object.
-  * `{$unset: array of strings}` remove the list of keys in `array` from the target object.
+  * `{$toggle: array of strings}` toggles a list of boolean fields from the
+  target object.
+  * `{$unset: array of strings}` remove the list of keys in `array` from the
+  target object.
   * `{$merge: object}` merge the keys of `object` with the target.
-  * `{$apply: function}` passes in the current value to the function and updates it with the new returned value.
+  * `{$apply: function}` passes in the current value to the function and
+  updates it with the new returned value.
+  * `{$add: array of objects` add a value to a `Map` or `Set`. When adding to a
+  `Set` you pass in an array of objects to add, when adding to a Map, you pass
+  in `[key, value]` arrays like so:
+  `update(myMap, {$add: [['foo', 'bar'], ['baz', 'boo']]})`
+  * `{$remove: array of strings` remove the list of keys in array from a `Map`
+  or `Set`.
 
 ## Examples
 
@@ -106,7 +144,8 @@ const collection = [1, 2, {a: [12, 17, 15]}];
 const newCollection = update(collection, {2: {a: {$splice: [[1, 1, 13, 14]]}}});
 // => [1, 2, {a: [12, 13, 14, 15]}]
 ```
-This accesses `collection`'s index `2`, key `a`, and does a splice of one item starting from index `1` (to remove `17`) while inserting `13` and `14`.
+This accesses `collection`'s index `2`, key `a`, and does a splice of one item
+starting from index `1` (to remove `17`) while inserting `13` and `14`.
 
 ### Updating a value based on its current one
 
@@ -129,8 +168,8 @@ const newObj = update(obj, {$merge: {b: 6, c: 7}}); // => {a: 5, b: 6, c: 7}
 
 Arrays can be indexed into with runtime variables via the ES2015
 [Computed Property Names](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#Computed_property_names)
-feature. An object property name expression may be wrapped in brackets [] which will be
-evaluated at runtime to form the final property name.
+feature. An object property name expression may be wrapped in brackets [] which
+will be evaluated at runtime to form the final property name.
 
 ```js
 const collection = {children: ['zero', 'one', 'two']};
@@ -141,16 +180,17 @@ const newCollection = update(collection, {children: {[index]: {$set: 1}}});
 
 ### [Autovivification](https://en.wikipedia.org/wiki/Autovivification)
 
-Autovivification is the auto creation of new arrays and objects when needed. In the context
-of javascript that would mean something like this
+Autovivification is the auto creation of new arrays and objects when needed. In
+the context of javascript that would mean something like this
 
 ```js
 const state = {}
 state.a.b.c = 1; // state would equal { a: { b: { c: 1 } } }
 ```
 
-Since javascript doesn't have this "feature", the same applies to `immutability-helper`. The reason
-why this is practically impossible in javascript and by extension `immutability-helper` is the following:
+Since javascript doesn't have this "feature", the same applies to
+`immutability-helper`. The reason why this is practically impossible in
+javascript and by extension `immutability-helper` is the following:
 
 ```js
 var state = {}
@@ -162,8 +202,9 @@ state.thing2.slice // should be undefined
 state.thing2.slice // should be a function
 ```
 
-If you need to set something deeply nested and don't want to have to set each layer down the line,
-consider using this technique which is shown with a contrived example:
+If you need to set something deeply nested and don't want to have to set each
+layer down the line, consider using this technique which is shown with a
+contrived example:
 
 ```js
 var state = {}
@@ -196,7 +237,8 @@ console.log(JSON.stringify(state2) === JSON.stringify(desiredState)) // true
 // var state = { foo: [ {bar: []} ] }
 ```
 
-You can also choose to use the extend functionality to add an `$auto` and `$autoArray` command:
+You can also choose to use the extend functionality to add an `$auto` and
+`$autoArray` command:
 
 ```js
 update.extend('$auto', function(value, object) {
@@ -246,11 +288,13 @@ const withTax = update(state, {
 assert(JSON.stringify(withTax) === JSON.stringify({ price: 221.4 }));
 ```
 
-Note that `original` in the function above is the original object, so if you plan making a
-mutation, you must first shallow clone the object. Another option is to
-use `update` to make the change `return update(original, { foo: {$set: 'bar'} })`
+Note that `original` in the function above is the original object, so if you
+plan making a mutation, you must first shallow clone the object. Another option
+is to use `update` to make the change
+`return update(original, { foo: {$set: 'bar'} })`
 
-If you don't want to mess around with the globally exported `update` function you can make a copy and work with that copy:
+If you don't want to mess around with the globally exported `update` function
+you can make a copy and work with that copy:
 
 ```js
 import { newContext } from 'immutability-helper';
