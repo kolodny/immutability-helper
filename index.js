@@ -47,6 +47,10 @@ function newContext() {
   return update;
 
   function update(object, spec) {
+    if (typeof spec === 'function') {
+      return spec(object);
+    }
+
     if (!(Array.isArray(object) && Array.isArray(spec))) {
       invariant(
         !Array.isArray(spec),

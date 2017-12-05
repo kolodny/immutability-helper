@@ -265,6 +265,32 @@ describe('update', function() {
     });
   });
 
+  describe('direct apply', function() {
+    var applier = function(node) {
+      return {v: node.v * 2};
+    };
+    it('applies', function() {
+      var doubler = function(value) {
+        return value * 2;
+      };
+      expect(update({v: 2}, applier)).toEqual({v: 4});
+      expect(update(2, doubler)).toEqual(4);
+    });
+    it('does not mutate the original object', function() {
+      var obj = {v: 2};
+      update(obj, applier);
+      expect(obj).toEqual({v: 2});
+    });
+    it('keeps reference equality when possible', function() {
+      var original = {a: {b: {}}};
+      function identity(val) {
+        return val;
+      }
+      expect(update(original, {a: identity})).toBe(original);
+      expect(update(original, {a: applier})).toNotBe(original);
+    });
+  });
+
   describe('deep update', function() {
     it('works', function() {
       expect(update({
@@ -276,6 +302,7 @@ describe('update', function() {
           h: [3],
           i: {j: 'k'},
           l: 4,
+          m: 'n',
         },
       }, {
         c: {
@@ -285,6 +312,7 @@ describe('update', function() {
           h: {$splice: [[0, 1, 7]]},
           i: {$merge: {n: 'o'}},
           l: {$apply: function(x) { return x * 2 }},
+          m: function(x) { return x + x },
         },
       })).toEqual({
         a: 'b',
@@ -295,6 +323,7 @@ describe('update', function() {
           h: [7],
           i: {j: 'k', n: 'o'},
           l: 8,
+          m: 'nn',
         },
       });
     });

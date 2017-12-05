@@ -127,6 +127,13 @@ The `$`-prefixed keys are called *commands*. The data structure they are
   * `{$remove: array of strings` remove the list of keys in array from a `Map`
   or `Set`.
 
+### Shorthand `$apply` syntax
+
+Additionally, instead of a command object, you can pass a function, and it will
+be treated as if it was a command object with the `$apply` command:
+`update({a: 1}, {a: function})`. That example would be equivalent to
+`update({a: 1}, {a: {$apply: function}})`.
+
 ## Examples
 
 ### Simple push
