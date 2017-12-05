@@ -129,8 +129,8 @@ The `$`-prefixed keys are called *commands*. The data structure they are
 
 ### Shorthand `$apply` syntax
 
-Additionally, instead of a command object, you can pass a function instead, and
-it will be treated as if it was a command object with the `$apply` command:
+Additionally, instead of a command object, you can pass a function, and it will
+be treated as if it was a command object with the `$apply` command:
 `update({a: 1}, {a: function})`. That example would be equivalent to
 `update({a: 1}, {a: {$apply: function}})`.
 
