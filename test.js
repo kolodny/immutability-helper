@@ -270,7 +270,11 @@ describe('update', function() {
       return {v: node.v * 2};
     };
     it('applies', function() {
+      var doubler = function(value) {
+        return value * 2;
+      };
       expect(update({v: 2}, applier)).toEqual({v: 4});
+      expect(update(2, doubler)).toEqual(4);
     });
     it('does not mutate the original object', function() {
       var obj = {v: 2};
