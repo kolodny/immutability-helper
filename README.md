@@ -223,19 +223,15 @@ var desiredState = {
   ],
 };
 
-var state2 = update(state, {
-  foo: {$apply: foo =>
+const state2 = update(state, {
+  foo: foo =>
     update(foo || [], {
-      0: {$apply: fooZero =>
+      0: fooZero =>
         update(fooZero || {}, {
-          bar: {$apply: bar =>
-            update(bar || [], {$push: ['x', 'y', 'z']})
-          }
+          bar: bar => update(bar || [], { $push: ["x", "y", "z"] })
         })
-      }
     })
-  }
-})
+});
 
 console.log(JSON.stringify(state2) === JSON.stringify(desiredState)) // true
 // note that state could have been declared as any of the following and it would still output true:
