@@ -3,6 +3,7 @@
   "version": "2.6.0",
   "description": "mutate a copy of data without changing the original source",
   "main": "index.js",
+  "typings": "index.d.ts",
   "scripts": {
     "test-cov": "nyc npm test && nyc report --reporter=lcov",
     "test-travis": "nyc npm test && nyc report --reporter=lcov",
