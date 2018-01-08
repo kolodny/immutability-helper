@@ -6,7 +6,7 @@
   "typings": "index.d.ts",
   "scripts": {
     "test-cov": "nyc npm test && nyc report --reporter=lcov",
-    "test-travis": "nyc npm test && nyc report --reporter=lcov",
+    "test-travis": "npm run test-dtslint && nyc npm test && nyc report --reporter=lcov",
     "test": "mocha test.js",
     "test-dtslint": "dtslint"
   },
