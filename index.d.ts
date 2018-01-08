@@ -19,7 +19,7 @@ declare function update<K, V>(
   query: MapOperators<K, V>,
 ): ReadonlyMap<K, V>
 
-declare function update<T>(data: T, query: Query<T>): object
+declare function update<T>(data: T, query: Query<T>): T
 
 type Tree<T> = {[K in keyof T]?: Query<T[K]>}
 type Query<T> =
