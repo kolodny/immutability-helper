@@ -7,7 +7,8 @@
   "scripts": {
     "test-cov": "nyc npm test && nyc report --reporter=lcov",
     "test-travis": "nyc npm test && nyc report --reporter=lcov",
-    "test": "mocha test.js"
+    "test": "mocha test.js",
+    "test-dtslint": "dtslint"
   },
   "keywords": [
     "immutability"
@@ -16,6 +17,7 @@
   "license": "MIT",
   "devDependencies": {
     "coveralls": "^2.11.6",
+    "dtslint": "^0.2.0",
     "expect": "^1.14.0",
     "mocha": "^2.4.5",
     "nyc": "^5.6.0"

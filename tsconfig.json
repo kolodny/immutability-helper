@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "lib": ["es6"],
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "noEmit": true,
+    "strictFunctionTypes": false,
+
+    "baseUrl": ".",
+    "paths": { "immutability-helper": ["."] }
+  }
+}
+
