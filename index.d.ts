@@ -3,10 +3,9 @@
 
 export = update
 
-// declare function update<T>(data: T, query: update.Query<T>): T
 declare function update<T>(
   data: ReadonlyArray<T>,
-  query: ArrayOperators<T>,
+  query: ArrayOperators<T> | any,
 ): ReadonlyArray<T>
 
 declare function update<T>(
