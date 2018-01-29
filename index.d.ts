@@ -5,7 +5,7 @@ export = update
 
 declare function update<T>(
   data: ReadonlyArray<T>,
-  query: ArrayOperators<T> | any,
+  query: ArrayOperators<T>,
 ): ReadonlyArray<T>
 
 declare function update<T>(
@@ -38,6 +38,7 @@ type ArrayOperators<T> =
   | {$push: T}
   | {$unshift: T}
   | {$splice: Array<[number, number]>}
+  | {[customCommand: string]: any}
 
 type MapOperators<K, V> = {$add: Array<[K, V]>} | {$remove: K[]}
 type SetOperators<T> = {$add: T[]} | {$remove: T[]}
