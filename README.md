@@ -120,11 +120,11 @@ The `$`-prefixed keys are called *commands*. The data structure they are
   * `{$merge: object}` merge the keys of `object` with the target.
   * `{$apply: function}` passes in the current value to the function and
   updates it with the new returned value.
-  * `{$add: array of objects` add a value to a `Map` or `Set`. When adding to a
+  * `{$add: array of objects}` add a value to a `Map` or `Set`. When adding to a
   `Set` you pass in an array of objects to add, when adding to a Map, you pass
   in `[key, value]` arrays like so:
   `update(myMap, {$add: [['foo', 'bar'], ['baz', 'boo']]})`
-  * `{$remove: array of strings` remove the list of keys in array from a `Map`
+  * `{$remove: array of strings}` remove the list of keys in array from a `Map`
   or `Set`.
 
 ### Shorthand `$apply` syntax
