@@ -29,8 +29,8 @@ type Query<T> =
 
 type ObjectOperators<T> =
   | {$set: any}
-  | {$toggle: Array<keyof T>}
-  | {$unset: Array<keyof T>}
+  | {$toggle: Array<keyof T | number>}
+  | {$unset: Array<keyof T | number>}
   | {$merge: Partial<T>}
   | {$apply: (old: T) => T}
   | ((old: T) => any)
