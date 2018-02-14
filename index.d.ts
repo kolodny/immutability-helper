@@ -1,7 +1,7 @@
 // Project: Immutability helper
 // TypeScript Version: 2.2
 
-export = update
+export default update
 
 declare function update<T>(
   data: ReadonlyArray<T>,
