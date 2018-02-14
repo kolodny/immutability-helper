@@ -21,7 +21,7 @@ declare function update<K, V>(
 declare function update<T>(data: T, query: Query<T>): T
 
 type Tree<T> = {[K in keyof T]?: Query<T[K]>}
-type Query<T> =
+export type Query<T> =
   | Tree<T>
   | ObjectOperators<T>
   | ArrayOperators<any>
