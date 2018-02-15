@@ -1,7 +1,7 @@
 // Project: Immutability helper
 // TypeScript Version: 2.2
 
-export = update
+export default update
 
 declare function update<T>(
   data: ReadonlyArray<T>,
@@ -21,7 +21,7 @@ declare function update<K, V>(
 declare function update<T>(data: T, query: Query<T>): T
 
 type Tree<T> = {[K in keyof T]?: Query<T[K]>}
-type Query<T> =
+export type Query<T> =
   | Tree<T>
   | ObjectOperators<T>
   | ArrayOperators<any>
@@ -29,8 +29,8 @@ type Query<T> =
 
 type ObjectOperators<T> =
   | {$set: any}
-  | {$toggle: Array<keyof T>}
-  | {$unset: Array<keyof T>}
+  | {$toggle: Array<keyof T | number>}
+  | {$unset: Array<keyof T | number>}
   | {$merge: Partial<T>}
   | {$apply: (old: T) => T}
   | ((old: T) => any)
