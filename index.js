@@ -177,7 +177,10 @@ var defaultCommands = {
   }
 };
 
-module.exports = newContext();
+var contextForExport = newContext();
+
+module.exports = contextForExport;
+module.exports.default = contextForExport;
 module.exports.newContext = newContext;
 
 // invariants
