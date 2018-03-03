@@ -2,6 +2,11 @@ var update = require('./');
 var expect = require('expect');
 
 describe('update', function() {
+  describe('default export', function() {
+    it('should equal update', function() {
+      expect(update.default).toEqual(update);
+    });
+  });
 
   describe('$push', function() {
     it('pushes', function() {
