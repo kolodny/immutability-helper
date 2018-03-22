@@ -529,4 +529,20 @@ describe('update', function() {
     expect(state2.items.top).toBe(0)
   });
 
+  it('supports Maps', function() {
+    var state = new Map([
+      ['mapKey', 'mapValue']
+    ]);
+
+    var updatedState = update(state, {
+      ['mapKey']: {$set: 'updatedMapValue' }
+    });
+
+    expect(updatedState).toEqual(
+      new Map([
+        ['mapKey', 'updatedMapValue']
+      ])
+    );
+  });
+
 });

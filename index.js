@@ -83,7 +83,11 @@ function newContext() {
           if (nextObject === object) {
             nextObject = copy(object);
           }
-          nextObject[key] = nextValueForKey;
+          if (type(nextObject) === 'Map') {
+            nextObject.set(key, nextValueForKey);
+          } else {
+            nextObject[key] = nextValueForKey;
+          }
         }
       }
     })
