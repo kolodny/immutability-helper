@@ -545,4 +545,23 @@ describe('update', function() {
     );
   });
 
+  it('supports nested objects inside Maps', function () {
+    var state = new Map([
+      ['mapKey', { banana: 'yellow', apple: ['red'], blueberry: 'purple' }]
+    ]);
+
+    var updatedState = update(state, {
+      ['mapKey']: { apple: { $set: ['green', 'red'] } }
+    });
+
+    expect(updatedState).toEqual(
+      new Map([
+        [
+          'mapKey',
+          { banana: 'yellow', apple: ['green', 'red'], blueberry: 'purple' }
+        ]
+      ])
+    );
+  })
+
 });
