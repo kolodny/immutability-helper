@@ -30,8 +30,8 @@ function copy(object) {
   } else if (type(object) === 'Set') {
     return new Set(object)
   } else if (object && typeof object === 'object') {
-    var prototype = object.constructor && object.constructor.prototype
-    return assign(Object.create(prototype || null), object);
+    var prototype = Object.getPrototypeOf(object);
+    return assign(Object.create(prototype), object);
   } else {
     return object;
   }
@@ -48,7 +48,7 @@ function newContext() {
 
   function update(object, spec) {
     if (typeof spec === 'function') {
-      return spec(object);
+      spec = { $apply: spec };
     }
 
     if (!(Array.isArray(object) && Array.isArray(spec))) {

@@ -506,6 +506,12 @@ describe('update', function() {
     expect(update.bind(null, obj, {$merge: {a: 'b'}})).toNotThrow()
   });
 
+  it('supports objects with prototypes', function() {
+    var proto = { a: 'Proto' };
+    var obj = Object.create(proto);
+    expect(update(obj, { $merge: { b: 'Obj' } }).a).toEqual('Proto');
+  });
+
   it('supports an escape hatch for isEquals', function() {
     myUpdate.isEquals = function(a, b) {
       return JSON.stringify(a) === JSON.stringify(b);
@@ -517,6 +523,15 @@ describe('update', function() {
     expect(a).toBe(b)
     expect(a).toBe(c)
     expect(a).toBe(d)
+  });
+
+  it('supports an escape hatch for isEqual for shallow direct apply', function() {
+    myUpdate.isEquals = function(a, b) {
+      return JSON.stringify(a) === JSON.stringify(b);
+    };
+    var a = { b: 1 };
+    var b = myUpdate(a, function() { return { b: 1 }; });
+    expect(a).toBe(b);
   });
 
   it('does not lose non integer keys of an array', function() {

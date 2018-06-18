@@ -20,7 +20,7 @@
     "coveralls": "^2.11.6",
     "dtslint": "^0.2.0",
     "expect": "^1.14.0",
-    "mocha": "^2.4.5",
+    "mocha": "^5.2.0",
     "nyc": "^5.6.0"
   },
   "dependencies": {
