@@ -82,7 +82,11 @@ function newContext() {
           type(object) === 'Map'
             ? update(object.get(key), spec[key])
             : update(object[key], spec[key]);
-        if (!update.isEquals(nextValueForKey, nextObject[key]) || typeof nextValueForKey === 'undefined' && !hasOwnProperty.call(object, key)) {
+        var nextObjectValue =
+          type(nextObject) === 'Map'
+              ? nextObject.get(key)
+              : nextObject[key];
+        if (!update.isEquals(nextValueForKey, nextObjectValue) || typeof nextValueForKey === 'undefined' && !hasOwnProperty.call(object, key)) {
           if (nextObject === object) {
             nextObject = copy(object);
           }

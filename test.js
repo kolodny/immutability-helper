@@ -577,6 +577,12 @@ describe('update', function() {
         ]
       ])
     );
-  })
+  });
+
+  it('supports Maps and keeps reference equality when possible', function() {
+    var original = new Map([['a', { b: 1 }]]);
+    expect(update(original, { a: { $merge: {} } })).toBe(original);
+    expect(update(original, { a: { $merge: { c: 2 } } })).toNotBe(original);
+  });
 
 });
