@@ -8,8 +8,8 @@
     "test-cov": "nyc npm test && nyc report --reporter=lcov",
     "test-travis": "npm run test-dtslint && nyc npm test && nyc report --reporter=lcov",
     "test": "mocha test.js",
-    "test-dtslint": "npm run node-gt4 && dtslint || true",
-    "node-gt4": "node -e 'process.exit(/v(\\d+)/.exec(process.version)[1] <= 4) ? 1 : 0'"
+    "test-dtslint": "npm run --silent node-lte4 || dtslint",
+    "node-lte4": "node -e 'process.exit(+(/v(\\d+)/.exec(process.version)[1]) <= 4 ? 0 : 1)'"
   },
   "keywords": [
     "immutability"
