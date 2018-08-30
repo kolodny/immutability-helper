@@ -8,6 +8,14 @@ declare function update<T, C extends CustomCommands<object> = never>(
   spec: Spec<T, C>,
 ): T;
 
+declare namespace update {
+  function newContext(): typeof update;
+  function extend<T>(
+    command: string,
+    handler: (param: any, old: T) => T,
+  ): void;
+}
+
 // Usage with custom commands is as follows:
 //
 //   interface MyCommands {
@@ -59,14 +67,3 @@ type ObjectSpec<T, C extends CustomCommands<object>> =
   | { $unset: Array<keyof T> }
   | { $merge: Partial<T> }
   | { [K in keyof T]?: Spec<T[K], C> };
-
-declare namespace update {
-  function newContext(): typeof update;
-  function extend<T>(
-    command: Command,
-    handler: (param: CommandArg, old: T) => T,
-  ): void;
-
-  type Command = string;
-  type CommandArg = any;
-}
