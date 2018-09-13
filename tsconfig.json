@@ -5,8 +5,8 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
+    "strictFunctionTypes": true,
     "noEmit": true,
-    "strictFunctionTypes": false,
 
     "baseUrl": ".",
     "paths": { "immutability-helper": ["."] }
