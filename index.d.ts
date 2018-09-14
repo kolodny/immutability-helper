@@ -49,7 +49,7 @@ export type Spec<T, C extends CustomCommands<object> = never> =
   | (C extends CustomCommands<infer O> ? O : never);
 
 type ArraySpec<T, C extends CustomCommands<object>> =
-  | { $push: T }
+  | { $push: Array[T] }
   | { $unshift: T }
   | { $splice: Array<[number] | [number, number] | [number, number, T]> }
   | { [index: string]: Spec<T, C> }; // Note that this does not type check properly if index: number.
