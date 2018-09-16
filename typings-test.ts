@@ -207,28 +207,28 @@ update(o, {
 // $ExpectType TestObject
 update(o, {
   array: {
-    $push: "string"
+    $push: ["string"]
   }
 });
 
 // $ExpectError
 update(o, {
   array: {
-    $push: 1
+    $push: [1]
   }
 });
 
 // $ExpectType TestObject
 update(o, {
   array: {
-    $unshift: "string"
+    $unshift: ["string"]
   }
 });
 
 // $ExpectError
 update(o, {
   array: {
-    $unshift: 1
+    $unshift: [1]
   }
 });
 
@@ -493,7 +493,7 @@ update(o, {
 // $ExpectType TestObject
 update(o, {
   intersection: {
-    $unshift: "string"
+    $unshift: ["string"]
   }
 });
 
