@@ -1,8 +1,9 @@
 {
   "extends": "dtslint/dtslint.json",
   "rules": {
+    "expect": true,
     "no-unnecessary-generics": false,
     "file-name-casing": false
-  }
+  },
+  "rulesDirectory": "./node_modules/dtslint/bin/rules"
 }
-

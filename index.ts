@@ -1,4 +1,5 @@
-import invariant from 'invariant';
+// TypeScript Version 3.1.6
+import * as invariant from 'invariant';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 const splice = Array.prototype.splice;
@@ -19,7 +20,7 @@ const assign = Object.assign || /* istanbul ignore next */ function assign(targe
 
 const getAllKeys = typeof Object.getOwnPropertySymbols === 'function' ?
   obj => Object.keys(obj)
-    .concat(Object.getOwnPropertySymbols(obj)) :
+    .concat(Object.getOwnPropertySymbols(obj) as any) :
   /* istanbul ignore next */ obj => Object.keys(obj);
 
 /* istanbul ignore next */
@@ -38,19 +39,20 @@ function copy(object) {
   }
 }
 
-function newContext() {
+export function newContext() {
   const commands = assign({}, defaultCommands);
-  update.extend = (directive, fn) => {
+  update.extend = <T>(directive: string, fn: (param: any, old: T) => T) => {
     commands[directive] = fn;
   };
   update.isEquals = (a, b) => a === b;
 
   return update;
 
-  function update(object, spec) {
-    if (typeof spec === 'function') {
-      spec = { $apply: spec };
-    }
+  function update<T, C extends CustomCommands<object> = never>(
+    object: T,
+    $spec: Spec<T, C>,
+  ): T {
+    const spec = (typeof $spec === 'function') ? { $apply: $spec } : $spec;
 
     if (!(Array.isArray(object) && Array.isArray(spec))) {
       invariant(
@@ -70,9 +72,7 @@ function newContext() {
         .join(', ')
     );
 
-    const nextObject = object;
-    const index;
-    const key;
+    let nextObject = object;
     getAllKeys(spec)
     .forEach(key => {
       if (hasOwnProperty.call(commands, key)) {
@@ -84,18 +84,18 @@ function newContext() {
       } else {
         const nextValueForKey =
           type(object) === 'Map'
-            ? update(object.get(key), spec[key])
+            ? update((object as any as Map<any, any>).get(key), spec[key])
             : update(object[key], spec[key]);
         const nextObjectValue =
           type(nextObject) === 'Map'
-              ? nextObject.get(key)
+              ? (nextObject as any as Map<any, any>).get(key)
               : nextObject[key];
         if (!update.isEquals(nextValueForKey, nextObjectValue) || typeof nextValueForKey === 'undefined' && !hasOwnProperty.call(object, key)) {
           if (nextObject === object) {
             nextObject = copy(object);
           }
           if (type(nextObject) === 'Map') {
-            nextObject.set(key, nextValueForKey);
+            (nextObject as any as Map<any, any>).set(key, nextValueForKey);
           } else {
             nextObject[key] = nextValueForKey;
           }
@@ -124,7 +124,7 @@ const defaultCommands = {
     });
     return nextObject;
   },
-  $set: (value, nextObject, spec) => {
+  $set: (value, _nextObject, spec) => {
     invariantSet(spec);
     return value;
   },
@@ -138,7 +138,7 @@ const defaultCommands = {
 
     return nextObjectCopy;
   },
-  $unset: (value, nextObject, spec, originalObject) => {
+  $unset: (value, nextObject, _spec, originalObject) => {
     invariantSpecArray(value, '$unset');
     value.forEach(key => {
       if (Object.hasOwnProperty.call(nextObject, key)) {
@@ -149,13 +149,14 @@ const defaultCommands = {
     });
     return nextObject;
   },
-  $add: (value, nextObject, spec, originalObject) => {
+  $add: (value, nextObject, _spec, originalObject) => {
     invariantMapOrSet(nextObject, '$add');
     invariantSpecArray(value, '$add');
     if (type(nextObject) === 'Map') {
       value.forEach(pair => {
         const key = pair[0];
         const value = pair[1];
+        /* istanbul ignore next */
         if (nextObject === originalObject && nextObject.get(key) !== value) nextObject = copy(originalObject);
         nextObject.set(key, value);
       });
@@ -167,7 +168,7 @@ const defaultCommands = {
     }
     return nextObject;
   },
-  $remove: (value, nextObject, spec, originalObject) => {
+  $remove: (value, nextObject, _spec, originalObject) => {
     invariantMapOrSet(nextObject, '$remove');
     invariantSpecArray(value, '$remove');
     value.forEach(key => {
@@ -176,7 +177,7 @@ const defaultCommands = {
     });
     return nextObject;
   },
-  $merge: (value, nextObject, spec, originalObject) => {
+  $merge: (value, nextObject, _spec, originalObject) => {
     invariantMerge(nextObject, value);
     getAllKeys(value)
     .forEach(key => {
@@ -193,11 +194,7 @@ const defaultCommands = {
   }
 };
 
-const contextForExport = newContext();
-
-module.exports = contextForExport;
-module.exports.default = contextForExport;
-module.exports.newContext = newContext;
+export default newContext();
 
 // invariants
 
@@ -276,3 +273,55 @@ function invariantMapOrSet(target, command) {
     typeOfTarget
   );
 }
+
+// Usage with custom commands is as follows:
+//
+//   interface MyCommands {
+//     $foo: string;
+//   }
+//
+//    update<Foo, CustomCommands<MyCommands>>(..., { $foo: "bar" });
+//
+// It is suggested that if you use custom commands frequently, you wrap and re-export a
+// properly-typed version of `update`:
+//
+//   function myUpdate<T>(object: T, spec: Spec<T, CustomCommands<MyCommands>>) {
+//     return update(object, spec);
+//   }
+//
+// See https://github.com/kolodny/immutability-helper/pull/108 for explanation of why this
+// type exists.
+export type CustomCommands<T> = T & { __noInferenceCustomCommandsBrand: any };
+
+type Spec<T, C extends CustomCommands<object> = never> =
+  | (
+      T extends (Array<infer U> | ReadonlyArray<infer U>) ? ArraySpec<U, C> :
+      T extends (Map<infer K, infer V> | ReadonlyMap<infer K, infer V>) ? MapSpec<K, V> :
+      T extends (Set<infer U> | ReadonlySet<infer U>) ? SetSpec<U> :
+      T extends object ? ObjectSpec<T, C> :
+      never
+    )
+  | { $set: T }
+  | { $apply: (v: T) => T }
+  | ((v: T) => T)
+  | (C extends CustomCommands<infer O> ? O : never);
+
+type ArraySpec<T, C extends CustomCommands<object>> =
+  | { $push: T[] }
+  | { $unshift: T[] }
+  | { $splice: Array<[number] | [number, number] | [number, number, T]> }
+  | { [index: string]: Spec<T, C> }; // Note that this does not type check properly if index: number.
+
+type MapSpec<K, V> =
+  | { $add: Array<[K, V]> }
+  | { $remove: K[] };
+
+type SetSpec<T> =
+  | { $add: T[] }
+  | { $remove: T[] };
+
+type ObjectSpec<T, C extends CustomCommands<object>> =
+  | { $toggle: Array<keyof T> }
+  | { $unset: Array<keyof T> }
+  | { $merge: Partial<T> }
+  | { [K in keyof T]?: Spec<T[K], C> };

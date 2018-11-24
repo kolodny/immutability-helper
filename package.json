@@ -5,11 +5,40 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
-    "test-cov": "nyc npm test && nyc report --reporter=lcov",
-    "test-travis": "npm run test-dtslint && nyc npm test && nyc report --reporter=lcov",
-    "test": "mocha test.js",
-    "test-dtslint": "npm run --silent node-lte4 || dtslint",
-    "node-lte4": "node -e 'process.exit(+(/v(\\d+)/.exec(process.version)[1]) <= 4 ? 0 : 1)'"
+    "lint": "tslint -p tsconfig.lint.json",
+    "prebuild": "rimraf *.js *.d.ts",
+    "build": "tsc",
+    "postbuild": "concat -o index.d.ts ./.dtslint ./index.d.ts",
+    "test-travis": "npm run test-dtslint && npm run test",
+    "test-dtslint": "npm run --silent node-lte4 || npm run build && dtslint",
+    "node-lte4": "node -e 'process.exit(+(/v(\\d+)/.exec(process.version)[1]) <= 4 ? 0 : 1)'",
+    "prepretest": "rimraf ./coverage ./.nyc_output",
+    "pretest": "tsc -p tsconfig.test.json",
+    "test": "nyc ts-mocha ./test/test.js",
+    "posttest": "rimraf ./test",
+    "prepublishOnly": "npm run lint && npm run build"
+  },
+  "nyc": {
+    "lines": 100,
+    "statements": 100,
+    "functions": 100,
+    "branches": 100,
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "all": true,
+    "cache": true,
+    "check-coverage": true,
+    "extensions": [
+      ".ts"
+    ],
+    "include": [
+      "test/*.js"
+    ],
+    "exclude": [
+      "test/test.js"
+    ]
   },
   "keywords": [
     "immutability"
@@ -17,11 +46,18 @@
   "author": "Moshe Kolodny",
   "license": "MIT",
   "devDependencies": {
+    "@types/expect": "^1.20.3",
+    "@types/invariant": "^2.2.29",
+    "@types/mocha": "^5.2.5",
+    "concat": "^1.0.3",
     "coveralls": "^2.11.6",
-    "dtslint": "^0.2.0",
+    "dtslint": "^0.3.0",
     "expect": "^1.14.0",
     "mocha": "^5.2.0",
-    "nyc": "^5.6.0"
+    "nyc": "^13.1.0",
+    "rimraf": "^2.6.2",
+    "ts-mocha": "^2.0.0",
+    "typescript": "^3.1.6"
   },
   "dependencies": {
     "invariant": "^2.2.0"

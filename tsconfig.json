@@ -1,15 +1,21 @@
 {
   "compilerOptions": {
+    "declaration": true,
     "module": "commonjs",
     "lib": ["es6"],
-    "noImplicitAny": true,
+    "noEmitHelpers": true,
+    "noImplicitAny": false,
     "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
-    "noEmit": true,
 
     "baseUrl": ".",
     "paths": { "immutability-helper": ["."] }
-  }
+  },
+  "files": [
+    "index.ts"
+  ]
 }
 
