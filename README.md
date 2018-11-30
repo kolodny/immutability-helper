@@ -5,6 +5,9 @@ immutability-helper
 [![Build status][travis-image]][travis-url]
 [![Test coverage][coveralls-image]][coveralls-url]
 [![Downloads][downloads-image]][downloads-url]
+[![Install size][install-size-image]][install-size-url]
+[![index.js size][index-js-size-image]][index-js-url]
+[![Gzip index.js size][gzip-index-js-size-image]][index-js-url]
 
 Mutate a copy of data without changing the original source
 
@@ -322,3 +325,8 @@ myUpdate.extend('$foo', function(value, original) {
 [coveralls-url]: https://coveralls.io/r/kolodny/immutability-helper
 [downloads-image]: http://img.shields.io/npm/dm/immutability-helper.svg?style=flat-square
 [downloads-url]: https://npmjs.org/package/immutability-helper
+[install-size-image]: https://packagephobia.now.sh/badge?p=immutability-helper
+[install-size-url]: https://packagephobia.now.sh/result?p=immutability-helper
+[index-js-size-image]: http://img.badgesize.io/kolodny/immutability-helper/master/index.js?label=index.js
+[index-js-url]: https://github.com/kolodny/immutability-helper/blob/master/index.js
+[gzip-index-js-size-image]: http://img.badgesize.io/kolodny/immutability-helper/master/index.js?compression=gzip&label=gzip%20index.js
