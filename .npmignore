@@ -7,4 +7,3 @@ test/
 *.ts
 !*.d.ts
 ts*.json
-typings-test.ts

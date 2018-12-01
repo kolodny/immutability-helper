@@ -1,6 +1,3 @@
-// Project: Immutability helper
-// TypeScript Version: 3.1
-
 export declare function newContext(): {
     <T, C extends CustomCommands<object> = never>(object: T, $spec: Spec<T, C>): T;
     extend<T>(directive: string, fn: (param: any, old: T) => T): void;
