@@ -22,7 +22,7 @@ declare type ArraySpec<T, C extends CustomCommands<object>> = {
 } | {
     $unshift: T[];
 } | {
-    $splice: Array<[number] | [number, number] | [number, number, T]>;
+    $splice: Array<[number, number?] | [number, number, ...T[]]>;
 } | {
     [index: string]: Spec<T, C>;
 };

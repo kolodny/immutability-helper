@@ -309,7 +309,7 @@ type Spec<T, C extends CustomCommands<object> = never> =
 type ArraySpec<T, C extends CustomCommands<object>> =
   | { $push: T[] }
   | { $unshift: T[] }
-  | { $splice: Array<[number] | [number, number] | [number, number, T]> }
+  | { $splice: Array<[number, number?] | [number, number, ...T[]]> }
   | { [index: string]: Spec<T, C> }; // Note that this does not type check properly if index: number.
 
 type MapSpec<K, V> =

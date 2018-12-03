@@ -64,7 +64,10 @@ describe('update', () => {
 
   describe('$splice', () => {
     it('splices', () => {
+      expect(update([7, 8, 9], {$splice: [[2]]})).toEqual([7, 8]);
+      expect(update([5, 6, 7, 8], {$splice: [[1, 2]]})).toEqual([5, 8]);
       expect(update([1, 4, 3], {$splice: [[1, 1, 2]]})).toEqual([1, 2, 3]);
+      expect(update([5, 4, 9], {$splice: [[1, 1, 6, 7, 8]]})).toEqual([5, 6, 7, 8, 9]);
     });
     it('does not mutate the original object', () => {
       const obj = Object.freeze([1, 4, 3]);
