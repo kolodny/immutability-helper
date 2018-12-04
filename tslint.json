@@ -1,6 +1,18 @@
 {
+  "extends": [
+    "tslint:recommended"
+  ],
   "rules": {
+    "arrow-parens": false,
+    "file-name-casing": false,
     "no-unnecessary-generics": false,
-    "file-name-casing": false
+    "object-literal-sort-keys": false,
+    "quotemark": [true, "single"],
+    "variable-name": [
+      true,
+      "allow-leading-underscore",
+      "ban-keywords",
+      "check-format"
+    ]
   }
 }

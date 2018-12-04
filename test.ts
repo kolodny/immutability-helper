@@ -23,12 +23,12 @@ describe('update', () => {
     it('only pushes an array', () => {
       expect(() => update([], {$push: 7} as any)).toThrow(
         'update(): expected spec of $push to be an array; got 7. Did you ' +
-        'forget to wrap your parameter in an array?'
+        'forget to wrap your parameter in an array?',
       );
     });
     it('only pushes unto an array', () => {
       expect(() => update(1, {$push: 7} as any)).toThrow(
-        'update(): expected target of $push to be an array; got 1.'
+        'update(): expected target of $push to be an array; got 1.',
       );
     });
     it('keeps reference equality when possible', () => {
@@ -48,12 +48,12 @@ describe('update', () => {
     it('only unshifts an array', () => {
       expect(() => update([], {$unshift: 7} as any)).toThrow(
         'update(): expected spec of $unshift to be an array; got 7. Did you ' +
-        'forget to wrap your parameter in an array?'
+        'forget to wrap your parameter in an array?',
       );
     });
     it('only unshifts unto an array', () => {
       expect(() => update(1, {$unshift: 7} as any)).toThrow(
-        'update(): expected target of $unshift to be an array; got 1.'
+        'update(): expected target of $unshift to be an array; got 1.',
       );
     });
     it('keeps reference equality when possible', () => {
@@ -76,16 +76,16 @@ describe('update', () => {
     it('only splices an array of arrays', () => {
       expect(() => update([], {$splice: 1} as any)).toThrow(
         'update(): expected spec of $splice to be an array of arrays; got 1. ' +
-        'Did you forget to wrap your parameters in an array?'
+        'Did you forget to wrap your parameters in an array?',
       );
       expect(() => update([], {$splice: [1]} as any)).toThrow(
         'update(): expected spec of $splice to be an array of arrays; got 1. ' +
-        'Did you forget to wrap your parameters in an array?'
+        'Did you forget to wrap your parameters in an array?',
       );
     });
     it('only splices unto an array', () => {
       expect(() => update(1, {$splice: 7} as any)).toThrow(
-        'Expected $splice target to be an array; got 1'
+        'Expected $splice target to be an array; got 1',
       );
     });
     it('keeps reference equality when possible', () => {
@@ -104,12 +104,12 @@ describe('update', () => {
     });
     it('only merges with an object', () => {
       expect(() => update({a: 'b'}, {$merge: 7} as any)).toThrow(
-        'update(): $merge expects a spec of type \'object\'; got 7'
+        'update(): $merge expects a spec of type \'object\'; got 7',
       );
     });
     it('only merges with an object', () => {
       expect(() => update(7, {$merge: {a: 'b'}} as any)).toThrow(
-        'update(): $merge expects a target of type \'object\'; got 7'
+        'update(): $merge expects a target of type \'object\'; got 7',
       );
     });
     it('keeps reference equality when possible', () => {
@@ -123,7 +123,7 @@ describe('update', () => {
       // Two objects are different values even though they are deeply equal.
       expect(update(original, {a: {$merge: { b: {c: true} }}})).toNotBe(original);
       expect(update(original, {
-        a: {$merge: { b: original.a.b, c: false }}
+        a: {$merge: { b: original.a.b, c: false }},
       })).toNotBe(original);
     });
   });
@@ -154,7 +154,7 @@ describe('update', () => {
     it('only takes an array as spec', () => {
       expect(() => update({a: false}, {$toggle: 'a'} as any)).toThrow(
         'update(): expected spec of $toggle to be an array; got a. Did you ' +
-        'forget to wrap your parameter in an array?'
+        'forget to wrap your parameter in an array?',
       );
     });
     it('toggles false to true and true to false', () => {
@@ -192,6 +192,7 @@ describe('update', () => {
         constructor(public foo = 'Parent') {
         }
       }
+      // tslint:disable-next-line:no-empty
       function Child() {}
       Child.prototype = new Parent();
       const child = new Child();
@@ -219,7 +220,7 @@ describe('update', () => {
     });
     it('throws on a non Map or Set', () => {
       expect(() => update(2, {$add: [1]} as any)).toThrow(
-        'update(): $add expects a target of type Set or Map; got Number'
+        'update(): $add expects a target of type Set or Map; got Number',
       );
     });
   });
@@ -241,7 +242,7 @@ describe('update', () => {
     });
     it('throws on a non Map or Set', () => {
       expect(() => update(2, {$remove: [1]} as any)).toThrow(
-        'update(): $remove expects a target of type Set or Map; got Number'
+        'update(): $remove expects a target of type Set or Map; got Number',
       );
     });
   });
@@ -257,7 +258,7 @@ describe('update', () => {
     });
     it('only applies a function', () => {
       expect(() => update(2, {$apply: 123} as any)).toThrow(
-        'update(): expected spec of $apply to be a function; got 123.'
+        'update(): expected spec of $apply to be a function; got 123.',
       );
     });
     it('keeps reference equality when possible', () => {
@@ -385,7 +386,7 @@ describe('update', () => {
       expect(() => update({a: 'b'}, spec as any)).toThrow(
         'update(): You provided an invalid spec to update(). The spec ' +
         'may not contain an array except as the value of $set, $push, ' +
-        '$unshift, $splice or any custom command allowing an array value.'
+        '$unshift, $splice or any custom command allowing an array value.',
       );
     });
   });
@@ -393,7 +394,7 @@ describe('update', () => {
   it('should reject non arrays from $unset', () => {
     expect(() => update({a: 'b'}, {$unset: 'a'} as any)).toThrow(
       'update(): expected spec of $unset to be an array; got a. ' +
-      'Did you forget to wrap your parameter in an array?'
+      'Did you forget to wrap your parameter in an array?',
     );
   });
 
@@ -409,7 +410,7 @@ describe('update', () => {
         'update(): You provided an invalid spec to update(). The spec ' +
         'and every included key path must be plain objects containing one ' +
         'of the following commands: $push, $unshift, $splice, $set, $toggle, $unset, ' +
-        '$add, $remove, $merge, $apply.'
+        '$add, $remove, $merge, $apply.',
       );
     });
   });
@@ -445,7 +446,7 @@ describe('update', () => {
       expect(obj).toBe(passedOriginal);
     });
 
-    it("doesn't touch the original update", () => {
+    it('doesn\'t touch the original update', () => {
       myUpdate.extend<number>('$addtax', (tax, original) => {
         return original + (tax * original);
       });
@@ -454,12 +455,13 @@ describe('update', () => {
     });
 
     it('can handle nibling directives', () => {
-      const obj = {a: [1, 2, 3], b: "me"};
+      const obj = {a: [1, 2, 3], b: 'me'};
       const spec = {
         a: {$splice: [[0, 2]]},
-        $merge: {b: "you"},
+        // tslint:disable-next-line:object-literal-sort-keys
+        $merge: {b: 'you'},
       };
-      expect(update(obj, spec)).toEqual({a: [3], b: "you"});
+      expect(update(obj, spec)).toEqual({a: [3], b: 'you'});
     });
   });
 
@@ -507,8 +509,8 @@ describe('update', () => {
   });
 
   it('supports an escape hatch for isEquals', () => {
-    myUpdate.isEquals = (a, b) => {
-      return JSON.stringify(a) === JSON.stringify(b);
+    myUpdate.isEquals = (x, y) => {
+      return JSON.stringify(x) === JSON.stringify(y);
     };
     const a = {b: {c: {d: [4, 5]}}};
     const b = myUpdate(a, {b: {c: {d: {$set: [4, 5]}}}});
@@ -520,8 +522,8 @@ describe('update', () => {
   });
 
   it('supports an escape hatch for isEqual for shallow direct apply', () => {
-    myUpdate.isEquals = (a, b) => {
-      return JSON.stringify(a) === JSON.stringify(b);
+    myUpdate.isEquals = (x, y) => {
+      return JSON.stringify(x) === JSON.stringify(y);
     };
     const a = { b: 1 };
     const b = myUpdate(a, () => ({ b: 1 }));
@@ -529,50 +531,50 @@ describe('update', () => {
   });
 
   it('does not lose non integer keys of an array', () => {
-    interface HasTop {
+    interface IHasTop {
       top: number;
     }
     const state = { items: [
       { name: 'Superman', strength: 1000 },
       { name: 'Jim', strength: 2 },
     ] };
-    (state.items as any as HasTop).top = 0;
+    (state.items as any as IHasTop).top = 0;
     const state2 = update(state, { items: { 1: { strength: { $set: 3 } } } });
-    expect((state2.items as any as HasTop).top).toBe(0);
+    expect((state2.items as any as IHasTop).top).toBe(0);
   });
 
   it('supports Maps', () => {
     const state = new Map([
-      ['mapKey', 'mapValue']
+      ['mapKey', 'mapValue'],
     ]);
 
     const updatedState = update(state, {
-      ['mapKey']: {$set: 'updatedMapValue' }
+      ['mapKey']: {$set: 'updatedMapValue' },
     } as any);
 
     expect(updatedState).toEqual(
       new Map([
-        ['mapKey', 'updatedMapValue']
-      ])
+        ['mapKey', 'updatedMapValue'],
+      ]),
     );
   });
 
   it('supports nested objects inside Maps', () => {
     const state = new Map([
-      ['mapKey', { banana: 'yellow', apple: ['red'], blueberry: 'purple' }]
+      ['mapKey', { banana: 'yellow', apple: ['red'], blueberry: 'purple' }],
     ]);
 
     const updatedState = update(state, {
-      ['mapKey']: { apple: { $set: ['green', 'red'] } }
+      ['mapKey']: { apple: { $set: ['green', 'red'] } },
     } as any);
 
     expect(updatedState).toEqual(
       new Map([
         [
           'mapKey',
-          { banana: 'yellow', apple: ['green', 'red'], blueberry: 'purple' }
-        ]
-      ])
+          { banana: 'yellow', apple: ['green', 'red'], blueberry: 'purple' },
+        ],
+      ]),
     );
   });
 

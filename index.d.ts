@@ -12,7 +12,7 @@ export default _default;
 export declare type CustomCommands<T> = T & {
     __noInferenceCustomCommandsBrand: any;
 };
-declare type Spec<T, C extends CustomCommands<object> = never> = (T extends (Array<infer U> | ReadonlyArray<infer U>) ? ArraySpec<U, C> : T extends (Map<infer K, infer V> | ReadonlyMap<infer K, infer V>) ? MapSpec<K, V> : T extends (Set<infer U> | ReadonlySet<infer U>) ? SetSpec<U> : T extends object ? ObjectSpec<T, C> : never) | {
+declare type Spec<T, C extends CustomCommands<object> = never> = (T extends (Array<infer U> | ReadonlyArray<infer U>) ? ArraySpec<U, C> : T extends (Map<infer K, infer V> | ReadonlyMap<infer K, infer V>) ? MapSpec<K, V> : T extends (Set<infer W> | ReadonlySet<infer W>) ? SetSpec<W> : T extends object ? ObjectSpec<T, C> : never) | {
     $set: T;
 } | {
     $apply: (v: T) => T;

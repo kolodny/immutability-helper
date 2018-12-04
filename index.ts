@@ -8,7 +8,7 @@ const toString = Object.prototype.toString;
 const type = obj => toString.call(obj)
   .slice(8, -1);
 
-const assign = Object.assign || /* istanbul ignore next */ function assign(target, source) {
+const assign = Object.assign || /* istanbul ignore next */ ((target, source) => {
   getAllKeys(source)
     .forEach(key => {
       if (hasOwnProperty.call(source, key)) {
@@ -16,7 +16,7 @@ const assign = Object.assign || /* istanbul ignore next */ function assign(targe
       }
     });
   return target;
-};
+});
 
 const getAllKeys = typeof Object.getOwnPropertySymbols === 'function' ?
   obj => Object.keys(obj)
@@ -59,7 +59,7 @@ export function newContext() {
         !Array.isArray(spec),
         'update(): You provided an invalid spec to update(). The spec may ' +
         'not contain an array except as the value of $set, $push, $unshift, ' +
-        '$splice or any custom command allowing an array value.'
+        '$splice or any custom command allowing an array value.',
       );
     }
 
@@ -69,7 +69,7 @@ export function newContext() {
       'every included key path must be plain objects containing one of the ' +
       'following commands: %s.',
       Object.keys(commands)
-        .join(', ')
+        .join(', '),
     );
 
     let nextObject = object;
@@ -90,7 +90,10 @@ export function newContext() {
           type(nextObject) === 'Map'
               ? (nextObject as any as Map<any, any>).get(key)
               : nextObject[key];
-        if (!update.isEquals(nextValueForKey, nextObjectValue) || typeof nextValueForKey === 'undefined' && !hasOwnProperty.call(object, key)) {
+        if (!update.isEquals(nextValueForKey, nextObjectValue)
+          || typeof nextValueForKey === 'undefined'
+          && !hasOwnProperty.call(object, key)
+        ) {
           if (nextObject === object) {
             nextObject = copy(object);
           }
@@ -119,7 +122,9 @@ const defaultCommands = {
     invariantSplices(nextObject, spec);
     value.forEach(args => {
       invariantSplice(args);
-      if (nextObject === originalObject && args.length) nextObject = copy(originalObject);
+      if (nextObject === originalObject && args.length) {
+        nextObject = copy(originalObject);
+      }
       splice.apply(nextObject, args);
     });
     return nextObject;
@@ -142,27 +147,33 @@ const defaultCommands = {
     invariantSpecArray(value, '$unset');
     value.forEach(key => {
       if (Object.hasOwnProperty.call(nextObject, key)) {
-        if (nextObject === originalObject) nextObject = copy(originalObject);
+        if (nextObject === originalObject) {
+          nextObject = copy(originalObject);
+        }
         // tslint:disable-next-line:no-dynamic-delete
         delete nextObject[key];
       }
     });
     return nextObject;
   },
-  $add: (value, nextObject, _spec, originalObject) => {
+  $add: (values, nextObject, _spec, originalObject) => {
     invariantMapOrSet(nextObject, '$add');
-    invariantSpecArray(value, '$add');
+    invariantSpecArray(values, '$add');
     if (type(nextObject) === 'Map') {
-      value.forEach(pair => {
+      values.forEach(pair => {
         const key = pair[0];
         const value = pair[1];
         /* istanbul ignore next */
-        if (nextObject === originalObject && nextObject.get(key) !== value) nextObject = copy(originalObject);
+        if (nextObject === originalObject && nextObject.get(key) !== value) {
+          nextObject = copy(originalObject);
+        }
         nextObject.set(key, value);
       });
     } else {
-      value.forEach(value => {
-        if (nextObject === originalObject && !nextObject.has(value)) nextObject = copy(originalObject);
+      values.forEach(value => {
+        if (nextObject === originalObject && !nextObject.has(value)) {
+          nextObject = copy(originalObject);
+        }
         nextObject.add(value);
       });
     }
@@ -172,7 +183,9 @@ const defaultCommands = {
     invariantMapOrSet(nextObject, '$remove');
     invariantSpecArray(value, '$remove');
     value.forEach(key => {
-      if (nextObject === originalObject && nextObject.has(key)) nextObject = copy(originalObject);
+      if (nextObject === originalObject && nextObject.has(key)) {
+        nextObject = copy(originalObject);
+      }
       nextObject.delete(key);
     });
     return nextObject;
@@ -182,7 +195,9 @@ const defaultCommands = {
     getAllKeys(value)
     .forEach(key => {
       if (value[key] !== nextObject[key]) {
-        if (nextObject === originalObject) nextObject = copy(originalObject);
+        if (nextObject === originalObject) {
+          nextObject = copy(originalObject);
+        }
         nextObject[key] = value[key];
       }
     });
@@ -191,7 +206,7 @@ const defaultCommands = {
   $apply: (value, original) => {
     invariantApply(value);
     return value(original);
-  }
+  },
 };
 
 export default newContext();
@@ -203,7 +218,7 @@ function invariantPushAndUnshift(value, spec, command) {
     Array.isArray(value),
     'update(): expected target of %s to be an array; got %s.',
     command,
-    value
+    value,
   );
   invariantSpecArray(spec[command], command);
 }
@@ -214,7 +229,7 @@ function invariantSpecArray(spec, command) {
     'update(): expected spec of %s to be an array; got %s. ' +
     'Did you forget to wrap your parameter in an array?',
     command,
-    spec
+    spec,
   );
 }
 
@@ -222,9 +237,9 @@ function invariantSplices(value, spec) {
   invariant(
     Array.isArray(value),
     'Expected $splice target to be an array; got %s',
-    value
+    value,
   );
-  invariantSplice(spec['$splice']);
+  invariantSplice(spec.$splice);
 }
 
 function invariantSplice(value) {
@@ -232,7 +247,7 @@ function invariantSplice(value) {
     Array.isArray(value),
     'update(): expected spec of $splice to be an array of arrays; got %s. ' +
     'Did you forget to wrap your parameters in an array?',
-    value
+    value,
   );
 }
 
@@ -240,14 +255,14 @@ function invariantApply(fn) {
   invariant(
     typeof fn === 'function',
     'update(): expected spec of $apply to be a function; got %s.',
-    fn
+    fn,
   );
 }
 
 function invariantSet(spec) {
   invariant(
     Object.keys(spec).length === 1,
-    'Cannot have more than one key in an object with $set'
+    'Cannot have more than one key in an object with $set',
   );
 }
 
@@ -255,12 +270,12 @@ function invariantMerge(target, specValue) {
   invariant(
     specValue && typeof specValue === 'object',
     'update(): $merge expects a spec of type \'object\'; got %s',
-    specValue
+    specValue,
   );
   invariant(
     target && typeof target === 'object',
     'update(): $merge expects a target of type \'object\'; got %s',
-    target
+    target,
   );
 }
 
@@ -270,7 +285,7 @@ function invariantMapOrSet(target, command) {
     typeOfTarget === 'Map' || typeOfTarget === 'Set',
     'update(): %s expects a target of type Set or Map; got %s',
     command,
-    typeOfTarget
+    typeOfTarget,
   );
 }
 
@@ -297,7 +312,7 @@ type Spec<T, C extends CustomCommands<object> = never> =
   | (
       T extends (Array<infer U> | ReadonlyArray<infer U>) ? ArraySpec<U, C> :
       T extends (Map<infer K, infer V> | ReadonlyMap<infer K, infer V>) ? MapSpec<K, V> :
-      T extends (Set<infer U> | ReadonlySet<infer U>) ? SetSpec<U> :
+      T extends (Set<infer W> | ReadonlySet<infer W>) ? SetSpec<W> :
       T extends object ? ObjectSpec<T, C> :
       never
     )
