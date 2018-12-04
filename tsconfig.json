@@ -3,6 +3,7 @@
     "declaration": true,
     "module": "commonjs",
     "lib": ["es6"],
+    "newLine": "LF",
     "noEmitHelpers": true,
     "noImplicitAny": false,
     "noImplicitThis": true,
