@@ -11,6 +11,9 @@
     "prepretest": "rimraf ./coverage ./.nyc_output",
     "pretest": "tsc -p tsconfig.test.json",
     "test": "nyc ts-mocha ./test/test.js",
+    "pretest-js": "rimraf ./test-js-dir",
+    "test-js": "node test-js",
+    "posttest-js": "rimraf ./test-js-dir",
     "posttest": "rimraf ./test",
     "prepublishOnly": "npm run lint && npm run build"
   },
