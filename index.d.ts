@@ -1,9 +1,14 @@
-declare const contextForExport: {
-    <T extends any, C extends CustomCommands<object> = never>(object: T, $spec: Spec<T, C>): T;
-    extend(directive: any, fn: any): void;
-    isEquals(a: any, b: any): boolean;
-};
-export default contextForExport;
+export declare class Context {
+    private commands;
+    constructor();
+    readonly isEquals: any;
+    extend<T>(directive: string, fn: (param: any, old: T) => T): void;
+    update<T, C extends CustomCommands<object> = never>(object: T, $spec: Spec<T, C>): T;
+}
+export declare const isEquals: any;
+export declare const extend: <T>(directive: string, fn: (param: any, old: T) => T) => void;
+declare const _default: <T, C extends CustomCommands<object> = never>(object: T, $spec: Spec<T, C>) => T;
+export default _default;
 export declare type CustomCommands<T> = T & {
     __noInferenceCustomCommandsBrand: any;
 };
@@ -17,7 +22,7 @@ declare type ArraySpec<T, C extends CustomCommands<object>> = {
 } | {
     $unshift: T[];
 } | {
-    $splice: Array<[number] | [number, number] | [number, number, T]>;
+    $splice: Array<[number, number?] | [number, number, ...T[]]>;
 } | {
     [index: string]: Spec<T, C>;
 };

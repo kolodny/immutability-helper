@@ -4,52 +4,70 @@ const hasOwnProperty = Object.prototype.hasOwnProperty;
 const splice = Array.prototype.splice;
 
 const toString = Object.prototype.toString;
-const type = (obj: any) =>
-  toString.call(obj).slice(8, -1);
+function type<T>(obj: T) {
+  return (toString.call(obj) as string).slice(8, -1);
+}
 
-const assign = Object.assign || /* istanbul ignore next */ ((target: any, source: any) => {
-  getAllKeys(source).forEach((key: any) => {
+const assign = Object.assign || /* istanbul ignore next */ (<T, S>(target: T, source: S) => {
+  getAllKeys(source).forEach(key => {
     if (hasOwnProperty.call(source, key)) {
       target[key] = source[key];
     }
   });
-  return target;
+  return target as T & S;
 });
 
-const getAllKeys = typeof Object.getOwnPropertySymbols === 'function' ?
-  (obj: any) => Object.keys(obj).concat(Object.getOwnPropertySymbols(obj) as any) :
-  /* istanbul ignore next */ (obj: any) => Object.keys(obj);
+const getAllKeys = typeof Object.getOwnPropertySymbols === 'function'
+  ? obj => Object.keys(obj).concat(Object.getOwnPropertySymbols(obj) as any)
+  /* istanbul ignore next */
+  : obj => Object.keys(obj);
 
-/* istanbul ignore next */
-function copy(object: any) {
-  if (Array.isArray(object)) {
-    return assign(object.constructor(object.length), object);
-  } else if (type(object) === 'Map') {
-    return new Map(object);
-  } else if (type(object) === 'Set') {
-    return new Set(object);
-  } else if (object && typeof object === 'object') {
-    const prototype = Object.getPrototypeOf(object);
-    return assign(Object.create(prototype), object);
-  } else {
-    return object;
-  }
+function copy<T, U, K, V, X>(
+  object: T extends U[]
+    ? U[]
+    : T extends Map<K, V>
+      ? Map<K, V>
+      : T extends Set<X>
+        ? Set<X>
+        : T extends object
+          ? T
+          : any,
+) {
+  return Array.isArray(object)
+    ? assign(object.constructor(object.length), object)
+    : (type(object) === 'Map')
+      ? new Map(object as Map<K, V>)
+      : (type(object) === 'Set')
+        ? new Set(object as Set<X>)
+        : (object && typeof object === 'object')
+          ? assign(Object.create(Object.getPrototypeOf(object)), object) as T
+          /* istanbul ignore next */
+          : object as T;
 }
 
-function newContext() {
-  const commands = assign({}, defaultCommands);
-  update.extend = (directive: any, fn: any) => {
-    (commands as any)[directive] = fn;
-  };
-  update.isEquals = (a: any, b: any) => a === b;
-
-  return update;
-
-  function update<T extends any, C extends CustomCommands<object> = never>(
+export class Context {
+  private commands = assign({}, defaultCommands);
+  constructor() {
+    this.update = this.update.bind(this);
+    (this.update as any).extend = this.extend = this.extend.bind(this);
+    (this.update as any).isEquals = (x, y) => x === y;
+    (this.update as any).newContext = () => new Context().update;
+  }
+  get isEquals() {
+    return (this.update as any).isEquals;
+  }
+  // TODO: Test setting new Context().isEquals
+  // set isEquals(value: (x, y) => boolean) {
+  //   (this.update as any).isEquals = value;
+  // }
+  public extend<T>(directive: string, fn: (param: any, old: T) => T) {
+    this.commands[directive] = fn;
+  }
+  public update<T, C extends CustomCommands<object> = never>(
     object: T,
     $spec: Spec<T, C>,
   ): T {
-    const spec: Spec<any, any> = (typeof $spec === 'function') ? { $apply: $spec } : $spec;
+    const spec = (typeof $spec === 'function') ? { $apply: $spec } : $spec;
 
     if (!(Array.isArray(object) && Array.isArray(spec))) {
       invariant(
@@ -65,27 +83,27 @@ function newContext() {
       'update(): You provided an invalid spec to update(). The spec and ' +
       'every included key path must be plain objects containing one of the ' +
       'following commands: %s.',
-      Object.keys(commands).join(', '),
+      Object.keys(this.commands).join(', '),
     );
 
     let nextObject = object;
-    getAllKeys(spec).forEach((key) => {
-      if (hasOwnProperty.call(commands, key)) {
+    getAllKeys(spec).forEach(key => {
+      if (hasOwnProperty.call(this.commands, key)) {
         const objectWasNextObject = object === nextObject;
-        nextObject = (commands as any)[key](spec[key], nextObject, spec, object);
-        if (objectWasNextObject && update.isEquals(nextObject, object)) {
+        nextObject = this.commands[key](spec[key], nextObject, spec, object);
+        if (objectWasNextObject && this.isEquals(nextObject, object)) {
           nextObject = object;
         }
       } else {
         const nextValueForKey =
           type(object) === 'Map'
-            ? update(object.get(key), spec[key])
-            : update(object[key], spec[key]);
+            ? this.update((object as any as Map<any, any>).get(key), spec[key])
+            : this.update(object[key], spec[key]);
         const nextObjectValue =
           type(nextObject) === 'Map'
-              ? nextObject.get(key)
+              ? (nextObject as any as Map<any, any>).get(key)
               : nextObject[key];
-        if (!update.isEquals(nextValueForKey, nextObjectValue)
+        if (!this.isEquals(nextValueForKey, nextObjectValue)
           || typeof nextValueForKey === 'undefined'
           && !hasOwnProperty.call(object, key)
         ) {
@@ -93,7 +111,7 @@ function newContext() {
             nextObject = copy(object);
           }
           if (type(nextObject) === 'Map') {
-            nextObject.set(key, nextValueForKey);
+            (nextObject as any as Map<any, any>).set(key, nextValueForKey);
           } else {
             nextObject[key] = nextValueForKey;
           }
@@ -102,7 +120,6 @@ function newContext() {
     });
     return nextObject;
   }
-
 }
 
 const defaultCommands = {
@@ -155,9 +172,7 @@ const defaultCommands = {
     invariantMapOrSet(nextObject, '$add');
     invariantSpecArray(values, '$add');
     if (type(nextObject) === 'Map') {
-      values.forEach((pair: any) => {
-        const key = pair[0];
-        const value = pair[1];
+      values.forEach(([key, value]) => {
         if (nextObject === originalObject && nextObject.get(key) !== value) {
           nextObject = copy(originalObject);
         }
@@ -202,14 +217,13 @@ const defaultCommands = {
   },
 };
 
-const contextForExport = newContext();
-(contextForExport as any).default = contextForExport;
-(contextForExport as any).newContext = newContext;
-
-export default contextForExport;
+const defaultContext = new Context();
+export const isEquals = (defaultContext.update as any).isEquals;
+export const extend = defaultContext.extend;
+export default defaultContext.update;
 
 // @ts-ignore
-exports.default.default = module.exports = Object.assign(exports.default, exports);
+exports.default.default = module.exports = assign(exports.default, exports);
 
 // invariants
 
@@ -324,7 +338,7 @@ export type Spec<T, C extends CustomCommands<object> = never> =
 type ArraySpec<T, C extends CustomCommands<object>> =
   | { $push: T[] }
   | { $unshift: T[] }
-  | { $splice: Array<[number] | [number, number] | [number, number, T]> }
+  | { $splice: Array<[number, number?] | [number, number, ...T[]]> }
   | { [index: string]: Spec<T, C> }; // Note that this does not type check properly if index: number.
 
 type MapSpec<K, V> =

@@ -8,14 +8,14 @@
     "lint": "tslint -p tsconfig.test.json",
     "prebuild": "rimraf index.js *.d.ts",
     "build": "tsc",
-    "pretest": "rimraf ./coverage",
+    "pretest": "rimraf ./coverage index.js",
     "test": "npm run lint && npm run jest && npm run smoke-test",
     "jest": "jest --coverage",
     "prewatch": "npm run lint",
     "watch": "jest --watch test.ts",
     "presmoke-test": "npm run build && rimraf smoke-test",
     "smoke-test": "node smoke-test.js",
-    "postsmoke-test": "rimraf smoke-test",
+    "postsmoke-test": "rimraf smoke-test index.js",
     "prepublishOnly": "npm run build"
   },
   "jest": {
