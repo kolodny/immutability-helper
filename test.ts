@@ -1,12 +1,29 @@
 'use strict';
 
-import update from '.';
+import update, { Context, extend, isEquals } from '.';
 
 describe('immutability-helper module', () => {
 
+  it('exports a Context class', () => {
+    expect(Context).not.toBeUndefined();
+    expect(new Context() instanceof Context).toBe(true);
+  });
+
+  it('exports an isEquals method', () => {
+    expect(typeof isEquals).toBe('function');
+  });
+
+  it('exports an extend method', () => {
+    expect(typeof extend).toBe('function');
+  });
+
   describe('default export', () => {
-    it('should equal update', () => {
-      expect((update as any).default).toEqual(update);
+    it('is a function', () => {
+      expect(typeof update).toBe('function');
+    });
+
+    it('has an extend method', () => {
+      expect(typeof (update as any).extend).toBe('function');
     });
   });
 
@@ -65,7 +82,7 @@ describe('immutability-helper module', () => {
       expect(update([7, 8, 9], {$splice: [[2]]})).toEqual([7, 8]);
       expect(update([5, 6, 7, 8], {$splice: [[1, 2]]})).toEqual([5, 8]);
       expect(update([1, 4, 3], {$splice: [[1, 1, 2]]})).toEqual([1, 2, 3]);
-      expect(update([5, 4, 9], {$splice: [[1, 1, 6, 7, 8]]} as any)).toEqual([5, 6, 7, 8, 9]);
+      expect(update([5, 4, 9], {$splice: [[1, 1, 6, 7, 8]]})).toEqual([5, 6, 7, 8, 9]);
     });
     it('does not mutate the original object', () => {
       const obj = Object.freeze([1, 4, 3]);
@@ -425,48 +442,52 @@ describe('immutability-helper module', () => {
   });
 });
 
-describe('update', () => {
-
-  let myUpdate;
+describe('new Context()', () => {
+  let myContext: Context;
   beforeEach(() => {
-    myUpdate = (update as any).newContext();
+    myContext = new Context();
+  });
+
+  it('has an extend method that matches update.extend', () => {
+    expect(myContext.extend).toBe((myContext.update as any).extend);
   });
 
   describe('can extend functionality', () => {
 
     it('allows adding new directives', () => {
-      myUpdate.extend('$addtax', (tax, original) => {
+      myContext.extend<number>('$addtax', (tax, original) => {
         return original + (tax * original);
       });
-      expect(myUpdate(5, {$addtax: 0.10})).toEqual(5.5);
-      expect(() => update({$addtax: 0.10}, {$addtax: 0.10} as any)).toThrow();
-      expect(() => myUpdate({$addtax: 0.10}, {$addtax: 0.10} as any)).not.toThrow();
+      expect(myContext.update(5, {$addtax: 0.10} as any)).toEqual(5.5);
     });
 
     it('gets the original object (so be careful about mutations)', () => {
       const obj = {};
-      let passedOriginal;
-      myUpdate.extend('$foobar', (_prop, original) => {
+      let passedOriginal: any;
+      myContext.extend<any>('$foobar', (_prop, original) => {
         passedOriginal = original;
       });
-      myUpdate(obj, {$foobar: null});
+      myContext.update(obj, {$foobar: null});
       expect(obj).toBe(passedOriginal);
     });
 
     it('doesn\'t touch the original update', () => {
-      myUpdate.extend('$addtax', (tax, original) => {
+      myContext.extend<number>('$addtax', (tax, original) => {
         return original + (tax * original);
       });
+      expect(() => update({$addtax: 0.10}, {$addtax: 0.10} as any)).toThrow();
+      expect(() => myContext.update({$addtax: 0.10}, {$addtax: 0.10} as any)).not.toThrow();
     });
+  });
 
-    it('can handle nibling directives', () => {
-      const obj = {a: [1, 2, 3], b: 'me'};
-      const spec = {
-        a: {$splice: [[0, 2]]},
-        $merge: {b: 'you'},
-      };
-      expect(update(obj, spec)).toEqual({a: [3], b: 'you'});
-    });
+  it('can handle nibling directives', () => {
+    const obj = {a: [1, 2, 3], b: 'me'};
+    const spec = {
+      a: {$splice: [[0, 2]]},
+      // tslint:disable-next-line:object-literal-sort-keys
+      $merge: {b: 'you'},
+    };
+    expect(update(obj, spec)).toEqual({a: [3], b: 'you'});
   });
 
   if (typeof Symbol === 'function' && Symbol('TEST').toString() === 'Symbol(TEST)') {
@@ -513,20 +534,24 @@ describe('update', () => {
   });
 
   it('supports an escape hatch for isEquals', () => {
-    myUpdate.isEquals = (x, y) => JSON.stringify(x) === JSON.stringify(y);
+    myContext.isEquals = (x, y) => {
+      return JSON.stringify(x) === JSON.stringify(y);
+    };
     const a = {b: {c: {d: [4, 5]}}};
-    const b = myUpdate(a, {b: {c: {d: {$set: [4, 5]}}}});
-    const c = myUpdate(a, {b: {$set: {c: {d: [4, 5]}}}});
-    const d = myUpdate(a, {$set: {b: {c: {d: [4, 5]}}}});
+    const b = myContext.update(a, {b: {c: {d: {$set: [4, 5]}}}});
+    const c = myContext.update(a, {b: {$set: {c: {d: [4, 5]}}}});
+    const d = myContext.update(a, {$set: {b: {c: {d: [4, 5]}}}});
     expect(a).toBe(b);
     expect(a).toBe(c);
     expect(a).toBe(d);
   });
 
   it('supports an escape hatch for isEqual for shallow direct apply', () => {
-    myUpdate.isEquals = (x, y) => JSON.stringify(x) === JSON.stringify(y);
+    myContext.isEquals = (x, y) => {
+      return JSON.stringify(x) === JSON.stringify(y);
+    };
     const a = { b: 1 };
-    const b = myUpdate(a, () => ({ b: 1 }));
+    const b = myContext.update(a, () => ({ b: 1 }));
     expect(a).toBe(b);
   });
 
@@ -549,7 +574,7 @@ describe('update', () => {
     ]);
 
     const updatedState = update(state, {
-      mapKey: {$set: 'updatedMapValue' },
+      ['mapKey']: {$set: 'updatedMapValue' },
     } as any);
 
     expect(updatedState).toEqual(
@@ -565,7 +590,7 @@ describe('update', () => {
     ]);
 
     const updatedState = update(state, {
-      mapKey: { apple: { $set: ['green', 'red'] } },
+      ['mapKey']: { apple: { $set: ['green', 'red'] } },
     } as any);
 
     expect(updatedState).toEqual(
@@ -582,5 +607,11 @@ describe('update', () => {
     const original = new Map([['a', { b: 1 }]]);
     expect(update(original, { a: { $merge: {} } } as any)).toBe(original);
     expect(update(original, { a: { $merge: { c: 2 } } } as any)).not.toBe(original);
+  });
+});
+
+describe('update', () => {
+  it('has a newContext method that returns', () => {
+    expect(typeof (update as any).newContext()).toBe('function');
   });
 });

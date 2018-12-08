@@ -56,10 +56,9 @@ export class Context {
   get isEquals() {
     return (this.update as any).isEquals;
   }
-  // TODO: Test setting new Context().isEquals
-  // set isEquals(value: (x, y) => boolean) {
-  //   (this.update as any).isEquals = value;
-  // }
+  set isEquals(value: (x, y) => boolean) {
+    (this.update as any).isEquals = value;
+  }
   public extend<T>(directive: string, fn: (param: any, old: T) => T) {
     this.commands[directive] = fn;
   }

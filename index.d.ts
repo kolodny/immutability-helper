@@ -1,7 +1,7 @@
 export declare class Context {
     private commands;
     constructor();
-    readonly isEquals: any;
+    isEquals: (x: any, y: any) => boolean;
     extend<T>(directive: string, fn: (param: any, old: T) => T): void;
     update<T, C extends CustomCommands<object> = never>(object: T, $spec: Spec<T, C>): T;
 }
