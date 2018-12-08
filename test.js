@@ -118,10 +118,10 @@ describe('update', function() {
       expect(update(original, {a: {b: { $merge: {c: true} }}})).toBe(original);
 
       // Two objects are different values even though they are deeply equal.
-      expect(update(original, {a: {$merge: { b: {c: true} }}})).toNotBe(original);
+      expect(update(original, {a: {$merge: { b: {c: true} }}})).not.toBe(original);
       expect(update(original, {
         a: {$merge: { b: original.a.b, c: false }}
-      })).toNotBe(original);
+      })).not.toBe(original);
     });
 
   });
@@ -138,12 +138,12 @@ describe('update', function() {
     it('keeps reference equality when possible', function() {
       var original = {a: 1};
       expect(update(original, {a: {$set: 1}})).toBe(original);
-      expect(update(original, {a: {$set: 2}})).toNotBe(original);
+      expect(update(original, {a: {$set: 2}})).not.toBe(original);
     });
     it('setting a property to undefined should add an enumerable key to final object with value undefined', function() {
       var original = {a: 1};
       var result = update(original, {b: {$set: undefined}});
-      expect(result).toNotBe(original);
+      expect(result).not.toBe(original);
       expect(result).toEqual({a: 1, b: undefined});
       expect(Object.keys(result).length).toEqual(2);
     });
@@ -167,7 +167,7 @@ describe('update', function() {
     it('keeps reference equality when possible', function() {
       var original = {a: false};
       expect(update(original, {$toggle: []})).toBe(original);
-      expect(update(original, {$toggle: ['a']})).toNotBe(original);
+      expect(update(original, {$toggle: ['a']})).not.toBe(original);
     });
   });
 
@@ -197,7 +197,7 @@ describe('update', function() {
     it('keeps reference equality when possible', function() {
       var original = {a: 1};
       expect(update(original, {$unset: ['b']})).toBe(original);
-      expect(update(original, {$unset: ['a']})).toNotBe(original);
+      expect(update(original, {$unset: ['a']})).not.toBe(original);
     });
   });
 
@@ -207,6 +207,12 @@ describe('update', function() {
       var state2 = update(state, {$add: [[5, 6]]});
       expect(state2.get(1)).toEqual(2);
       expect(state2.get(5)).toEqual(6);
+    });
+    it('works on Map', function() {
+      var state = new Map([[1, 2]]);
+      var state2 = update(state, {$add: [[1, 2]]});
+      expect(state2.get(1)).toEqual(2);
+      expect(state2).toBe(state);
     });
     it('works on Set', function() {
       var state = new Set([1, 2, 3, 4]);
@@ -266,7 +272,7 @@ describe('update', function() {
         return val;
       }
       expect(update(original, {a: {$apply: identity}})).toBe(original);
-      expect(update(original, {a: {$apply: applier}})).toNotBe(original);
+      expect(update(original, {a: {$apply: applier}})).not.toBe(original);
     });
   });
 
@@ -292,7 +298,7 @@ describe('update', function() {
         return val;
       }
       expect(update(original, {a: identity})).toBe(original);
-      expect(update(original, {a: applier})).toNotBe(original);
+      expect(update(original, {a: applier})).not.toBe(original);
     });
   });
 
@@ -359,9 +365,9 @@ describe('update', function() {
         c: {d: {e: {$set: 1}}},
       }).c.d).toBe(original.c.d);
 
-      expect(update(original, {a: {b: {$set: 2}}})).toNotBe(original);
-      expect(update(original, {a: {b: {$set: 2}}}).a).toNotBe(original.a);
-      expect(update(original, {a: {b: {$set: 2}}}).a.b).toNotBe(original.a.b);
+      expect(update(original, {a: {b: {$set: 2}}})).not.toBe(original);
+      expect(update(original, {a: {b: {$set: 2}}}).a).not.toBe(original.a);
+      expect(update(original, {a: {b: {$set: 2}}}).a.b).not.toBe(original.a.b);
 
       expect(update(original, {a: {b: {$set: 2}}}).c).toBe(original.c);
       expect(update(original, {a: {b: {$set: 2}}}).c.d).toBe(original.c.d);
@@ -459,7 +465,7 @@ describe('update', function() {
         return original + (tax * original);
       });
       expect(  update.bind(null, {$addtax: 0.10}, {$addtax: 0.10})).toThrow();
-      expect(myUpdate.bind(null, {$addtax: 0.10}, {$addtax: 0.10})).toNotThrow();
+      expect(myUpdate.bind(null, {$addtax: 0.10}, {$addtax: 0.10})).not.toThrow();
     });
 
     it('can handle nibling directives', function() {
@@ -503,7 +509,7 @@ describe('update', function() {
 
   it('supports objects without prototypes', function() {
     var obj = Object.create(null);
-    expect(update.bind(null, obj, {$merge: {a: 'b'}})).toNotThrow()
+    expect(update.bind(null, obj, {$merge: {a: 'b'}})).not.toThrow()
   });
 
   it('supports objects with prototypes', function() {
@@ -582,7 +588,7 @@ describe('update', function() {
   it('supports Maps and keeps reference equality when possible', function() {
     var original = new Map([['a', { b: 1 }]]);
     expect(update(original, { a: { $merge: {} } })).toBe(original);
-    expect(update(original, { a: { $merge: { c: 2 } } })).toNotBe(original);
+    expect(update(original, { a: { $merge: { c: 2 } } })).not.toBe(original);
   });
 
 });
