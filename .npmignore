@@ -1,3 +1,7 @@
 node_modules/
-.nyc_output/
 coverage/
+immutability-helper-*
+.travis.yml
+*.ts
+!*.d.ts
+ts*.json

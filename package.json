@@ -5,13 +5,18 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
+    "lint": "tslint -p tsconfig.test.json",
+    "prebuild": "rimraf index.js *.d.ts",
+    "build": "tsc",
     "pretest": "rimraf ./coverage",
-    "test": "npm run jest && npm run smoke-test",
+    "test": "npm run lint && npm run jest && npm run smoke-test",
     "jest": "jest --coverage",
+    "prewatch": "npm run lint",
     "watch": "jest --watch test.ts",
-    "presmoke-test": "rimraf smoke-test",
+    "presmoke-test": "npm run build && rimraf smoke-test",
     "smoke-test": "node smoke-test.js",
-    "postsmoke-test": "rimraf smoke-test"
+    "postsmoke-test": "rimraf smoke-test",
+    "prepublishOnly": "npm run build"
   },
   "jest": {
     "preset": "ts-jest",
