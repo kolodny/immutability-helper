@@ -5,6 +5,8 @@ immutability-helper
 [![Build status][travis-image]][travis-url]
 [![Test coverage][coveralls-image]][coveralls-url]
 [![Downloads][downloads-image]][downloads-url]
+[![Minified size][min-size-image]][bundlephobia-url]
+[![Gzip size][gzip-size-image]][bundlephobia-url]
 
 Mutate a copy of data without changing the original source
 
@@ -322,3 +324,6 @@ myUpdate.extend('$foo', function(value, original) {
 [coveralls-url]: https://coveralls.io/r/kolodny/immutability-helper
 [downloads-image]: http://img.shields.io/npm/dm/immutability-helper.svg?style=flat-square
 [downloads-url]: https://npmjs.org/package/immutability-helper
+[min-size-image]: https://badgen.net/bundlephobia/min/immutability-helper?label=minified
+[gzip-size-image]: https://badgen.net/bundlephobia/minzip/immutability-helper?label=gzip
+[bundlephobia-url]: https://bundlephobia.com/result?p=immutability-helper
