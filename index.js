@@ -69,7 +69,6 @@ function newContext() {
     );
 
     var nextObject = object;
-    var index, key;
     getAllKeys(spec).forEach(function(key) {
       if (hasOwnProperty.call(commands, key)) {
         var objectWasNextObject = object === nextObject;
@@ -84,8 +83,8 @@ function newContext() {
             : update(object[key], spec[key]);
         var nextObjectValue =
           type(nextObject) === 'Map'
-              ? nextObject.get(key)
-              : nextObject[key];
+            ? nextObject.get(key)
+            : nextObject[key];
         if (!update.isEquals(nextValueForKey, nextObjectValue) || typeof nextValueForKey === 'undefined' && !hasOwnProperty.call(object, key)) {
           if (nextObject === object) {
             nextObject = copy(object);
