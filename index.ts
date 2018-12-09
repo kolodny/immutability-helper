@@ -49,6 +49,7 @@ export class Context {
   private commands = assign({}, defaultCommands);
   constructor() {
     this.update = this.update.bind(this);
+    // Deprecated: update.extend, update.isEquals and update.newContext
     (this.update as any).extend = this.extend = this.extend.bind(this);
     (this.update as any).isEquals = (x, y) => x === y;
     (this.update as any).newContext = () => new Context().update;

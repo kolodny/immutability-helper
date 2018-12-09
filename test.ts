@@ -448,8 +448,18 @@ describe('new Context()', () => {
     myContext = new Context();
   });
 
-  it('has an extend method that matches update.extend', () => {
+  it('has an update method', () => {
+    expect(typeof myContext.update).toBe('function');
+  });
+
+  it('has an extend method that matches a (deprecated) update.extend', () => {
     expect(myContext.extend).toBe((myContext.update as any).extend);
+  });
+
+  it('has an isEquals method that calls a (deprecated) update.isEquals', () => {
+    const spy = jest.spyOn(myContext.update as any, 'isEquals');
+    myContext.isEquals('foo', 'foo');
+    expect(spy).toHaveBeenCalled();
   });
 
   describe('can extend functionality', () => {
@@ -537,6 +547,7 @@ describe('new Context()', () => {
     myContext.isEquals = (x, y) => {
       return JSON.stringify(x) === JSON.stringify(y);
     };
+    expect(myContext.isEquals).toBe((myContext.update as any).isEquals);
     const a = {b: {c: {d: [4, 5]}}};
     const b = myContext.update(a, {b: {c: {d: {$set: [4, 5]}}}});
     const c = myContext.update(a, {b: {$set: {c: {d: [4, 5]}}}});
@@ -550,6 +561,7 @@ describe('new Context()', () => {
     myContext.isEquals = (x, y) => {
       return JSON.stringify(x) === JSON.stringify(y);
     };
+    expect(myContext.isEquals).toBe((myContext.update as any).isEquals);
     const a = { b: 1 };
     const b = myContext.update(a, () => ({ b: 1 }));
     expect(a).toBe(b);
@@ -611,7 +623,7 @@ describe('new Context()', () => {
 });
 
 describe('update', () => {
-  it('has a newContext method that returns', () => {
+  it('has a (deprecated) newContext method', () => {
     expect(typeof (update as any).newContext()).toBe('function');
   });
 });

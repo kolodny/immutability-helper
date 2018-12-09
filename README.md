@@ -72,6 +72,8 @@ the objects that haven't changed. Unfortunately, in today's JavaScript this can
 be cumbersome:
 
 ```js
+import update, { extend } from 'immutability-helper';
+
 const newData = extend(myData, {
   x: extend(myData.x, {
     y: extend(myData.x.y, {z: 7}),
@@ -253,12 +255,14 @@ You can also choose to use the extend functionality to add an `$auto` and
 `$autoArray` command:
 
 ```js
-update.extend('$auto', function(value, object) {
+import update, { extend } from 'immutability-helper';
+
+extend('$auto', function(value, object) {
   return object ?
     update(object, value):
     update({}, value);
 });
-update.extend('$autoArray', function(value, object) {
+extend('$autoArray', function(value, object) {
   return object ?
     update(object, value):
     update([], value);
@@ -290,7 +294,9 @@ The main difference this module has with `react-addons-update` is that
 you can extend this to give it more functionality:
 
 ```js
-update.extend('$addtax', function(tax, original) {
+import update, { extend } from 'immutability-helper';
+
+extend('$addtax', function(tax, original) {
   return original + (tax * original);
 });
 const state = { price: 123 };
@@ -309,11 +315,15 @@ If you don't want to mess around with the globally exported `update` function
 you can make a copy and work with that copy:
 
 ```js
-import { newContext } from 'immutability-helper';
-const myUpdate = newContext();
-myUpdate.extend('$foo', function(value, original) {
+import { Context } from 'immutability-helper';
+
+const myContext = new Context();
+
+myContext.extend('$foo', function(value, original) {
   return 'foo!';
 });
+
+myContext.update(/* args */);
 ```
 
 [npm-image]: https://img.shields.io/npm/v/immutability-helper.svg?style=flat-square
