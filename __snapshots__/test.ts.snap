@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`immutability-helper module $add works on Map 1`] = `
+Map {
+  1 => 2,
+  3 => 4,
+  5 => 6,
+}
+`;
+
+exports[`immutability-helper module $add works on Set 1`] = `
+Set {
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+}
+`;

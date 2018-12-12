@@ -5,11 +5,36 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
-    "test-cov": "nyc npm test && nyc report --reporter=lcov",
-    "test-travis": "npm run test-dtslint && nyc npm test && nyc report --reporter=lcov",
-    "test": "mocha test.js",
-    "test-dtslint": "npm run --silent node-lte4 || dtslint",
-    "node-lte4": "node -e 'process.exit(+(/v(\\d+)/.exec(process.version)[1]) <= 4 ? 0 : 1)'"
+    "lint": "tslint -p tsconfig.test.json",
+    "prebuild": "rimraf index.js *.d.ts",
+    "build": "tsc",
+    "pretest": "rimraf ./coverage index.js",
+    "test": "npm run lint && npm run jest && npm run smoke-test",
+    "jest": "jest --coverage",
+    "prewatch": "npm run lint",
+    "watch": "jest --watch test.ts",
+    "presmoke-test": "npm run build && rimraf smoke-test",
+    "smoke-test": "node smoke-test.js",
+    "postsmoke-test": "rimraf smoke-test index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "verbose": true,
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "lcov",
+      "text"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    }
   },
   "keywords": [
     "immutability"
@@ -17,11 +42,14 @@
   "author": "Moshe Kolodny",
   "license": "MIT",
   "devDependencies": {
+    "@types/invariant": "^2.2.29",
+    "@types/jest": "^23.3.10",
     "coveralls": "^2.11.6",
-    "dtslint": "^0.2.0",
-    "expect": "^1.14.0",
-    "mocha": "^5.2.0",
-    "nyc": "^5.6.0"
+    "jest": "^23.6.0",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^23.10.5",
+    "tslint": "^5.11.0",
+    "typescript": "^3.2.2"
   },
   "dependencies": {
     "invariant": "^2.2.0"
