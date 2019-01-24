@@ -18,10 +18,11 @@
   "license": "MIT",
   "devDependencies": {
     "coveralls": "^2.11.6",
-    "dtslint": "^0.2.0",
+    "dtslint": "^0.4.2",
     "expect": "^1.14.0",
     "mocha": "^5.2.0",
-    "nyc": "^5.6.0"
+    "nyc": "^5.6.0",
+    "typescript": "^3.2.4"
   },
   "dependencies": {
     "invariant": "^2.2.0"
