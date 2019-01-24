@@ -5,3 +5,4 @@ immutability-helper-*
 *.ts
 !*.d.ts
 ts*.json
+.history/
