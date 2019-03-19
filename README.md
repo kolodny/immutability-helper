@@ -138,6 +138,10 @@ be treated as if it was a command object with the `$apply` command:
 `update({a: 1}, {a: function})`. That example would be equivalent to
 `update({a: 1}, {a: {$apply: function}})`.
 
+### Limitations
+
+:warning: `update` only works for _data properties_, not for _accessor properties_ defined with `Object.defineProperty`. It just does not see the latter, and therefore might create shadowing data properties which could break application logic depending on setter side effects. Therefore `update` should only be used on plain data objects that only contain _data properties_ as descendants.
+
 ## Examples
 
 ### Simple push
