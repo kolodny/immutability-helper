@@ -72,13 +72,11 @@ the objects that haven't changed. Unfortunately, in today's JavaScript this can
 be cumbersome:
 
 ```js
-import update, { extend } from 'immutability-helper';
-
-const newData = extend(myData, {
-  x: extend(myData.x, {
-    y: extend(myData.x.y, {z: 7}),
+const newData = Object.assign({}, myData, {
+  x: Object.assign({}, myData.x, {
+    y: Object.assign({}, myData.x.y, {z: 7}),
   }),
-  a: extend(myData.a, {b: myData.a.b.concat(9)})
+  a: Object.assign({}, myData.a, {b: myData.a.b.concat(9)})
 });
 ```
 
