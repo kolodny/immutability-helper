@@ -163,6 +163,13 @@ describe('immutability-helper module', () => {
       expect(result).toEqual({a: 1, b: undefined});
       expect(Object.keys(result).length).toEqual(2);
     });
+    it('works on Map (E2E)', () => {
+      const state = new Map([['foo', 'FOO'], ['bar', 'BAR']]);
+      const modified = update(state, {foo: {$set: 'OFO' }});
+      expect(state).toEqual(new Map([['foo', 'FOO'], ['bar', 'BAR']]));
+      expect(modified).toEqual(new Map([['foo', 'OFO'], ['bar', 'BAR']]));
+      expect(state).not.toBe(modified);
+    });
   });
 
   describe('$toggle', () => {
