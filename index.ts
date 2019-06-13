@@ -343,7 +343,8 @@ type ArraySpec<T, C extends CustomCommands<object>> =
 
 type MapSpec<K, V> =
   | { $add: Array<[K, V]> }
-  | { $remove: K[] };
+  | { $remove: K[] }
+  | { [key: string]: { $set: V } };
 
 type SetSpec<T> =
   | { $add: T[] }

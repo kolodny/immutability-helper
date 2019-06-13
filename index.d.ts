@@ -30,6 +30,10 @@ declare type MapSpec<K, V> = {
     $add: Array<[K, V]>;
 } | {
     $remove: K[];
+} | {
+    [key: string]: {
+        $set: V;
+    };
 };
 declare type SetSpec<T> = {
     $add: T[];
