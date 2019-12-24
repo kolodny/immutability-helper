@@ -32,7 +32,7 @@ React.
 
 React lets you use whatever style of data management you want, including
 mutation. However, if you can use immutable data in performance-critical parts
-of your application it's easy to implement a fast[`shouldComponentUpdate()`](https://facebook.github.io/react/docs/react-component.html#shouldcomponentupdate) method
+of your application it's easy to implement a fast [`shouldComponentUpdate()`](https://facebook.github.io/react/docs/react-component.html#shouldcomponentupdate) method
 to significantly speed up your app.
 
 Dealing with immutable data in JavaScript is more difficult than in languages
