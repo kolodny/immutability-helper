@@ -18,32 +18,32 @@ export declare type Spec<T, C extends CustomCommands<object> = never> = (T exten
     $apply: (v: T) => T;
 } | ((v: T) => T) | (C extends CustomCommands<infer O> ? O : never);
 declare type ArraySpec<T, C extends CustomCommands<object>> = {
-    $push: T[];
+    $push: ReadonlyArray<T>;
 } | {
-    $unshift: T[];
+    $unshift: ReadonlyArray<T>;
 } | {
-    $splice: Array<[number, number?] | [number, number, ...T[]]>;
+    $splice: ReadonlyArray<[number, number?] | [number, number, ...T[]]>;
 } | {
     [index: string]: Spec<T, C>;
 };
 declare type MapSpec<K, V> = {
-    $add: Array<[K, V]>;
+    $add: ReadonlyArray<[K, V]>;
 } | {
-    $remove: K[];
+    $remove: ReadonlyArray<K>;
 } | {
     [key: string]: {
         $set: V;
     };
 };
 declare type SetSpec<T> = {
-    $add: T[];
+    $add: ReadonlyArray<T>;
 } | {
-    $remove: T[];
+    $remove: ReadonlyArray<T>;
 };
 declare type ObjectSpec<T, C extends CustomCommands<object>> = {
-    $toggle: Array<keyof T>;
+    $toggle: ReadonlyArray<keyof T>;
 } | {
-    $unset: Array<keyof T>;
+    $unset: ReadonlyArray<keyof T>;
 } | {
     $merge: Partial<T>;
 } | {

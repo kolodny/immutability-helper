@@ -23,8 +23,8 @@ const getAllKeys = typeof Object.getOwnPropertySymbols === 'function'
   : obj => Object.keys(obj);
 
 function copy<T, U, K, V, X>(
-  object: T extends U[]
-    ? U[]
+  object: T extends ReadonlyArray<U>
+    ? ReadonlyArray<U>
     : T extends Map<K, V>
       ? Map<K, V>
       : T extends Set<X>
@@ -336,22 +336,22 @@ export type Spec<T, C extends CustomCommands<object> = never> =
   | (C extends CustomCommands<infer O> ? O : never);
 
 type ArraySpec<T, C extends CustomCommands<object>> =
-  | { $push: T[] }
-  | { $unshift: T[] }
-  | { $splice: Array<[number, number?] | [number, number, ...T[]]> }
+  | { $push: ReadonlyArray<T> }
+  | { $unshift: ReadonlyArray<T> }
+  | { $splice: ReadonlyArray<[number, number?] | [number, number, ...T[]]> }
   | { [index: string]: Spec<T, C> }; // Note that this does not type check properly if index: number.
 
 type MapSpec<K, V> =
-  | { $add: Array<[K, V]> }
-  | { $remove: K[] }
+  | { $add: ReadonlyArray<[K, V]> }
+  | { $remove: ReadonlyArray<K> }
   | { [key: string]: { $set: V } };
 
 type SetSpec<T> =
-  | { $add: T[] }
-  | { $remove: T[] };
+  | { $add: ReadonlyArray<T> }
+  | { $remove: ReadonlyArray<T> };
 
 type ObjectSpec<T, C extends CustomCommands<object>> =
-  | { $toggle: Array<keyof T> }
-  | { $unset: Array<keyof T> }
+  | { $toggle: ReadonlyArray<keyof T> }
+  | { $unset: ReadonlyArray<keyof T> }
   | { $merge: Partial<T> }
   | { [K in keyof T]?: Spec<T[K], C> };

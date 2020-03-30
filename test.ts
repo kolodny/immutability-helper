@@ -634,3 +634,25 @@ describe('update', () => {
     expect(typeof (update as any).newContext()).toBe('function');
   });
 });
+
+describe('works with readonly arrays', () => {
+  interface Thing {
+    bar: {
+      foo: ReadonlyArray<{ baz: number }>;
+    };
+  }
+
+  const a: Thing = {
+    bar: { foo: [ {baz: 1} ] }
+  };
+  const b: Thing = {
+    bar: { foo: [ {baz: 2} ] }
+  };
+  expect(update(a, {
+    bar: {
+      foo: { $push: b.bar.foo }
+    }
+  })).toEqual({
+    bar: { foo: [{ baz: 1 }, { baz: 2 }]}
+  });
+});
