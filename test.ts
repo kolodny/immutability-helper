@@ -138,7 +138,7 @@ describe('immutability-helper module', () => {
       // Two objects are different values even though they are deeply equal.
       expect(update(original, {a: {$merge: { b: {c: true} }}})).not.toBe(original);
       expect(update(original, {
-        a: {$merge: { b: original.a.b, c: false }},
+        a: {$merge: { b: original.a.b, c: false } as any},
       })).not.toBe(original);
     });
   });
