@@ -156,6 +156,11 @@ describe('immutability-helper module', () => {
       expect(update(original, {a: {$set: 1}})).toBe(original);
       expect(update(original, {a: {$set: 2}})).not.toBe(original);
     });
+    it('only allows the single $set item', () => {
+      expect(() => update({a: false}, {$set: true, bad: 123} as any)).toThrow(
+        'Cannot have more than one key in an object with $set',
+      );
+    });
     it('setting a property to undefined should add an enumerable key to final object with value undefined', () => {
       const original = {a: 1};
       const result = update(original, {b: {$set: undefined}} as any);

@@ -51,9 +51,6 @@
     "tslint": "^5.11.0",
     "typescript": "^3.8.3"
   },
-  "dependencies": {
-    "invariant": "^2.2.4"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kolodny/immutability-helper.git"
