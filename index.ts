@@ -2,13 +2,14 @@ declare let process: any;
 
 function stringifiable(obj: any) {
   // Safely stringify Object.create(null)
+  /* istanbul ignore next */
   return typeof obj === 'object' && !('toString' in obj) ?
     Object.prototype.toString.call(obj).slice(8, -1) :
     obj;
 }
 
 const isProduction = typeof process === 'object' && process.env.NODE_ENV === 'production';
-function invariant(condition: boolean, message: () => string) {
+export function invariant(condition: boolean, message: () => string) {
   if (!condition) {
     /* istanbul ignore next */
     if (isProduction) {

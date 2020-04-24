@@ -1,3 +1,4 @@
+export declare function invariant(condition: boolean, message: () => string): void;
 export declare class Context {
     private commands;
     constructor();
