@@ -1,4 +1,23 @@
-import * as invariant from 'invariant';
+declare let process: any;
+
+function stringifiable(obj: any) {
+  // Safely stringify Object.create(null)
+  /* istanbul ignore next */
+  return typeof obj === 'object' && !('toString' in obj) ?
+    Object.prototype.toString.call(obj).slice(8, -1) :
+    obj;
+}
+
+const isProduction = typeof process === 'object' && process.env.NODE_ENV === 'production';
+export function invariant(condition: boolean, message: () => string) {
+  if (!condition) {
+    /* istanbul ignore next */
+    if (isProduction) {
+      throw new Error('Invariant failed');
+    }
+    throw new Error(message());
+  }
+}
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 const splice = Array.prototype.splice;
@@ -72,18 +91,18 @@ export class Context {
     if (!(Array.isArray(object) && Array.isArray(spec))) {
       invariant(
         !Array.isArray(spec),
-        'update(): You provided an invalid spec to update(). The spec may ' +
-        'not contain an array except as the value of $set, $push, $unshift, ' +
-        '$splice or any custom command allowing an array value.',
+        () => `update(): You provided an invalid spec to update(). The spec may ` +
+        `not contain an array except as the value of $set, $push, $unshift, ` +
+        `$splice or any custom command allowing an array value.`,
       );
     }
 
     invariant(
       typeof spec === 'object' && spec !== null,
-      'update(): You provided an invalid spec to update(). The spec and ' +
-      'every included key path must be plain objects containing one of the ' +
-      'following commands: %s.',
-      Object.keys(this.commands).join(', '),
+      () => `update(): You provided an invalid spec to update(). The spec and ` +
+      `every included key path must be plain objects containing one of the ` +
+      `following commands: ${Object.keys(this.commands).join(', ')}.`,
+
     );
 
     let nextObject = object;
@@ -108,7 +127,7 @@ export class Context {
           && !hasOwnProperty.call(object, key)
         ) {
           if (nextObject === object) {
-            nextObject = copy(object);
+            nextObject = copy(object as any);
           }
           if (type(nextObject) === 'Map') {
             (nextObject as any as Map<any, any>).set(key, nextValueForKey);
@@ -230,9 +249,7 @@ exports.default.default = module.exports = assign(exports.default, exports);
 function invariantPushAndUnshift(value: any, spec: any, command: any) {
   invariant(
     Array.isArray(value),
-    'update(): expected target of %s to be an array; got %s.',
-    command,
-    value,
+    () => `update(): expected target of ${stringifiable(command)} to be an array; got ${stringifiable(value)}.`,
   );
   invariantSpecArray(spec[command], command);
 }
@@ -240,18 +257,15 @@ function invariantPushAndUnshift(value: any, spec: any, command: any) {
 function invariantSpecArray(spec: any, command: any) {
   invariant(
     Array.isArray(spec),
-    'update(): expected spec of %s to be an array; got %s. ' +
-    'Did you forget to wrap your parameter in an array?',
-    command,
-    spec,
+    () => `update(): expected spec of ${stringifiable(command)} to be an array; got ${stringifiable(spec)}. ` +
+    `Did you forget to wrap your parameter in an array?`,
   );
 }
 
 function invariantSplices(value: any, spec: any) {
   invariant(
     Array.isArray(value),
-    'Expected $splice target to be an array; got %s',
-    value,
+    () => `Expected $splice target to be an array; got ${stringifiable(value)}`,
   );
   invariantSplice(spec.$splice);
 }
@@ -259,37 +273,33 @@ function invariantSplices(value: any, spec: any) {
 function invariantSplice(value: any) {
   invariant(
     Array.isArray(value),
-    'update(): expected spec of $splice to be an array of arrays; got %s. ' +
-    'Did you forget to wrap your parameters in an array?',
-    value,
+    () => `update(): expected spec of $splice to be an array of arrays; got ${stringifiable(value)}. ` +
+    `Did you forget to wrap your parameters in an array?`,
   );
 }
 
 function invariantApply(fn: any) {
   invariant(
     typeof fn === 'function',
-    'update(): expected spec of $apply to be a function; got %s.',
-    fn,
+    () => `update(): expected spec of $apply to be a function; got ${stringifiable(fn)}.`,
   );
 }
 
 function invariantSet(spec: any) {
   invariant(
     Object.keys(spec).length === 1,
-    'Cannot have more than one key in an object with $set',
+    () => `Cannot have more than one key in an object with $set`,
   );
 }
 
 function invariantMerge(target: any, specValue: any) {
   invariant(
     specValue && typeof specValue === 'object',
-    'update(): $merge expects a spec of type \'object\'; got %s',
-    specValue,
+    () => `update(): $merge expects a spec of type 'object'; got ${stringifiable(specValue)}`,
   );
   invariant(
     target && typeof target === 'object',
-    'update(): $merge expects a target of type \'object\'; got %s',
-    target,
+    () => `update(): $merge expects a target of type 'object'; got ${stringifiable(target)}`,
   );
 }
 
@@ -297,9 +307,7 @@ function invariantMapOrSet(target: any, command: any) {
   const typeOfTarget = type(target);
   invariant(
     typeOfTarget === 'Map' || typeOfTarget === 'Set',
-    'update(): %s expects a target of type Set or Map; got %s',
-    command,
-    typeOfTarget,
+    () => `update(): ${stringifiable(command)} expects a target of type Set or Map; got ${stringifiable(typeOfTarget)}`,
   );
 }
 

@@ -1,7 +1,9 @@
+export declare function invariant(condition: boolean, message: () => string): void;
 export declare class Context {
     private commands;
     constructor();
-    isEquals: (x: any, y: any) => boolean;
+    get isEquals(): (x: any, y: any) => boolean;
+    set isEquals(value: (x: any, y: any) => boolean);
     extend<T>(directive: string, fn: (param: any, old: T) => T): void;
     update<T, C extends CustomCommands<object> = never>(object: T, $spec: Spec<T, C>): T;
 }

@@ -138,7 +138,7 @@ describe('immutability-helper module', () => {
       // Two objects are different values even though they are deeply equal.
       expect(update(original, {a: {$merge: { b: {c: true} }}})).not.toBe(original);
       expect(update(original, {
-        a: {$merge: { b: original.a.b, c: false }},
+        a: {$merge: { b: original.a.b, c: false } as any},
       })).not.toBe(original);
     });
   });
@@ -155,6 +155,11 @@ describe('immutability-helper module', () => {
       const original = {a: 1};
       expect(update(original, {a: {$set: 1}})).toBe(original);
       expect(update(original, {a: {$set: 2}})).not.toBe(original);
+    });
+    it('only allows the single $set item', () => {
+      expect(() => update({a: false}, {$set: true, bad: 123} as any)).toThrow(
+        'Cannot have more than one key in an object with $set',
+      );
     });
     it('setting a property to undefined should add an enumerable key to final object with value undefined', () => {
       const original = {a: 1};
