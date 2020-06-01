@@ -12,7 +12,7 @@ export default _default;
 export declare type CustomCommands<T> = T & {
     __noInferenceCustomCommandsBrand: any;
 };
-export declare type Spec<T, C extends CustomCommands<object> = never> = (T extends (Array<infer U> | ReadonlyArray<infer U>) ? ArraySpec<U, C> : T extends (Map<infer K, infer V> | ReadonlyMap<infer K, infer V>) ? MapSpec<K, V> : T extends (Set<infer X> | ReadonlySet<infer X>) ? SetSpec<X> : T extends object ? ObjectSpec<T, C> : never) | {
+export declare type Spec<T, C extends CustomCommands<object> = never> = (T extends (Array<infer U> | ReadonlyArray<infer U>) ? ArraySpec<U, C> : T extends (Map<infer K, infer V> | ReadonlyMap<infer K, infer V>) ? MapSpec<K, V, C> : T extends (Set<infer X> | ReadonlySet<infer X>) ? SetSpec<X> : T extends object ? ObjectSpec<T, C> : never) | {
     $set: T;
 } | {
     $apply: (v: T) => T;
@@ -26,14 +26,12 @@ declare type ArraySpec<T, C extends CustomCommands<object>> = {
 } | {
     [index: string]: Spec<T, C>;
 };
-declare type MapSpec<K, V> = {
+declare type MapSpec<K, V, C extends CustomCommands<object>> = {
     $add: ReadonlyArray<[K, V]>;
 } | {
     $remove: ReadonlyArray<K>;
 } | {
-    [key: string]: {
-        $set: V;
-    };
+    [key: string]: Spec<V, C>;
 };
 declare type SetSpec<T> = {
     $add: ReadonlyArray<T>;
