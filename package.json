@@ -58,5 +58,8 @@
   "bugs": {
     "url": "https://github.com/kolodny/immutability-helper/issues"
   },
-  "homepage": "https://github.com/kolodny/immutability-helper#readme"
+  "homepage": "https://github.com/kolodny/immutability-helper#readme",
+  "engines": {
+    "node": ">=8"
+  }
 }
