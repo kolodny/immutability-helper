@@ -219,7 +219,7 @@ state.thing2[1] = 'foo2' // What about thing2? This must be an object!
 state.thing3 = ['thing3'] // This is regular js, this works without autovivification
 state.thing3[1] = 'foo3' // Hmm, notice that state.thing2 is an object, yet this is an array
 state.thing2.slice // should be undefined
-state.thing2.slice // should be a function
+state.thing3.slice // should be a function
 ```
 
 If you need to set something deeply nested and don't want to have to set each
