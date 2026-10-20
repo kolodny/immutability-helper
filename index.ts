@@ -192,7 +192,7 @@ const defaultCommands = {
     invariantSpecArray(values, '$add');
     if (type(nextObject) === 'Map') {
       values.forEach(([key, value]) => {
-        if (nextObject === originalObject && nextObject.get(key) !== value) {
+        if (nextObject === originalObject && (!nextObject.has(key) || nextObject.get(key) !== value)) {
           nextObject = copy(originalObject);
         }
         nextObject.set(key, value);
