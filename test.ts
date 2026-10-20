@@ -233,6 +233,17 @@ describe('immutability-helper module', () => {
   });
 
   describe('$add', () => {
+    it('copies a Map before adding a missing key with an undefined value', () => {
+      const state = new Map<string, number | undefined>([['kept', 1]]);
+      const result = update(state, {$add: [['added', undefined]]});
+      expect(result).not.toBe(state);
+      expect(state.has('added')).toBe(false);
+      expect(result.has('added')).toBe(true);
+      expect(result.get('added')).toBeUndefined();
+      expect(result.get('kept')).toBe(1);
+      expect(update(result, {$add: [['added', undefined]]})).toBe(result);
+    });
+
     it('works on Map', () => {
       const state = new Map([[1, 2], [3, 4]]);
       expect(update(state, {$add: [[5, 6]]})).toMatchSnapshot();
